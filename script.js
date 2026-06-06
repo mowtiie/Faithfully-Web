@@ -71,6 +71,28 @@ function initCountdown() {
     setInterval(tick, 1000);
 }
 
+function initAnniversaryCounter() {
+    const beginning = new Date('2026-02-18T00:00:00');
+    const numEl = document.getElementById('anniversaryDays');
+    if (!numEl) return;
+
+    function tick() {
+        const now  = new Date();
+        const diff = now - beginning;
+
+        if (diff < 0) {
+            numEl.textContent = '0';
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        numEl.textContent = days;
+    }
+
+    tick();
+    setInterval(tick, 60 * 60 * 1000);
+}
+
 function loadLetters() {
     const container = document.getElementById('chaptersContainer');
     container.innerHTML = '<div class="empty-state" style="opacity:.5">Loading...</div>';
@@ -208,5 +230,6 @@ function escapeHtml(text) {
 document.addEventListener('DOMContentLoaded', function () {
     createFloatingHearts();
     initCountdown();
+    initAnniversaryCounter();
     initThemeToggle();
 });

@@ -113,3 +113,15 @@ body.dark-mode .download-link:hover {
     background: linear-gradient(135deg, var(--sky-blue), var(--accent-gold));
     box-shadow: 0 6px 20px rgba(168, 213, 226, 0.5);
 }
+
+body.dark-mode .anniversary-wrapper {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(245, 217, 122, 0.25);
+}
+
+body.dark-mode .anniversary-label  { color: var(--sand); }
+body.dark-mode .anniversary-number {
+    color: var(--sky-blue);
+    text-shadow: 1px 1px 8px rgba(245, 217, 122, 0.25);
+}
+body.dark-mode .anniversary-unit   { color: var(--sand); }
