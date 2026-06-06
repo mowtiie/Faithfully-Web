@@ -125,3 +125,14 @@ body.dark-mode .anniversary-number {
     text-shadow: 1px 1px 8px rgba(245, 217, 122, 0.25);
 }
 body.dark-mode .anniversary-unit   { color: var(--sand); }
+
+body.dark-mode .drawer-collapse-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(168, 213, 226, 0.25);
+    color: var(--sky-blue);
+}
+
+body.dark-mode .drawer-collapse-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--sky-blue);
+}

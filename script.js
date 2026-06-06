@@ -215,6 +215,19 @@ function initThemeToggle() {
     });
 }
 
+function initDrawerCollapse() {
+    const btn = document.getElementById('drawerCollapseBtn');
+    if (!btn) return;
+
+    const collapsed = localStorage.getItem('drawerCollapsed') === 'true';
+    if (collapsed) document.body.classList.add('drawer-collapsed');
+
+    btn.addEventListener('click', () => {
+        const isNowCollapsed = document.body.classList.toggle('drawer-collapsed');
+        localStorage.setItem('drawerCollapsed', isNowCollapsed);
+    });
+}
+
 const stickyHeader = document.getElementById('stickyHeader');
 window.addEventListener('scroll', () => {
     stickyHeader.classList.toggle('visible', window.scrollY > 100);
@@ -232,4 +245,5 @@ document.addEventListener('DOMContentLoaded', function () {
     initCountdown();
     initAnniversaryCounter();
     initThemeToggle();
+    initDrawerCollapse();
 });
