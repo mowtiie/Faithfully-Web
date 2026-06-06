@@ -2,7 +2,7 @@
 
 # 🌻 Her Website
 
-### *A quiet place for letters, memories, and a countdown to her birthday.*
+### *A quiet place for letters and memories.*
 
 A personal website I built for someone special — handwritten letters, organized into chapters, with a real-time backend and a companion Android admin app.
 
