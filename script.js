@@ -31,11 +31,11 @@ function switchSection(name, btn) {
 
 function createFloatingHearts() {
     const heartsContainer = document.getElementById('heartsBackground');
-    const hearts = ['❤️', '💕', '💖', '💝', '💗', '💓'];
+    const flowers = ['🌻', '🌼', '🌾', '🌿'];
     for (let i = 0; i < 15; i++) {
         const heart = document.createElement('div');
         heart.className = 'heart-float';
-        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.textContent = flowers[Math.floor(Math.random() * flowers.length)];
         heart.style.left = Math.random() * 100 + '%';
         heart.style.animationDelay = Math.random() * 15 + 's';
         heart.style.animationDuration = (15 + Math.random() * 10) + 's';
@@ -45,39 +45,26 @@ function createFloatingHearts() {
 
 function initCountdown() {
     const birthday = new Date('2026-06-16T00:00:00');
-    const datingStart = new Date('2026-02-18T00:00:00'); 
 
     function tick() {
         const now  = new Date();
-        
-        const diffBirth = birthday - now;
-        if (diffBirth <= 0) {
+        const diff = birthday - now;
+
+        if (diff <= 0) {
             document.getElementById('countdownBlocks').style.display   = 'none';
             document.getElementById('countdownBirthday').style.display = 'block';
-        } else {
-            const bDays    = Math.floor(diffBirth / (1000 * 60 * 60 * 24));
-            const bHours   = Math.floor((diffBirth % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const bMinutes = Math.floor((diffBirth % (1000 * 60 * 60)) / (1000 * 60));
-            const bSeconds = Math.floor((diffBirth % (1000 * 60)) / 1000);
-
-            document.getElementById('cd-days').textContent    = String(bDays).padStart(2, '0');
-            document.getElementById('cd-hours').textContent   = String(bHours).padStart(2, '0');
-            document.getElementById('cd-minutes').textContent = String(bMinutes).padStart(2, '0');
-            document.getElementById('cd-seconds').textContent = String(bSeconds).padStart(2, '0');
+            return;
         }
 
-        const diffDating = now - datingStart;
-        if (diffDating > 0) {
-            const rDays    = Math.floor(diffDating / (1000 * 60 * 60 * 24));
-            const rHours   = Math.floor((diffDating % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const rMinutes = Math.floor((diffDating % (1000 * 60 * 60)) / (1000 * 60));
-            const rSeconds = Math.floor((diffDating % (1000 * 60)) / 1000);
+        const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-            document.getElementById('rel-days').textContent    = String(rDays).padStart(2, '0');
-            document.getElementById('rel-hours').textContent   = String(rHours).padStart(2, '0');
-            document.getElementById('rel-minutes').textContent = String(rMinutes).padStart(2, '0');
-            document.getElementById('rel-seconds').textContent = String(rSeconds).padStart(2, '0');
-        }
+        document.getElementById('cd-days').textContent    = String(days).padStart(2, '0');
+        document.getElementById('cd-hours').textContent   = String(hours).padStart(2, '0');
+        document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
     }
 
     tick();

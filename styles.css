@@ -5,15 +5,15 @@
 }
 
 :root {
-    --navy-blue: #2c5f7e;
-    --soft-blue: #5a9bd4;
-    --sky-blue: #a8d5e2;
-    --warm-beige: #f5e6d3;
-    --cream-beige: #faf4ed;
-    --sand: #e8dcc4;
-    --deep-navy: #1a3a4f;
-    --accent-gold: #d4af37;
-    --shadow-blue: rgba(44, 95, 126, 0.15);
+    --navy-blue:    #8a6d1a;
+    --soft-blue:    #d4a82c;
+    --sky-blue:     #f5d97a;
+    --warm-beige:   #fef5e0;
+    --cream-beige:  #fffaf0;
+    --sand:         #f0e2c0;
+    --deep-navy:    #5a4515;
+    --accent-gold:  #f2b705;
+    --shadow-blue:  rgba(138, 109, 26, 0.15);
 }
 
 body {
@@ -37,8 +37,8 @@ body {
 
 .heart-float {
     position: absolute;
-    font-size: 20px;
-    opacity: 0.08;
+    font-size: 22px;
+    opacity: 0.12;
     animation: float-up 15s infinite ease-in-out;
 }
 
@@ -48,10 +48,10 @@ body {
         opacity: 0;
     }
     10% {
-        opacity: 0.08;
+        opacity: 0.12;
     }
     90% {
-        opacity: 0.08;
+        opacity: 0.12;
     }
     100% {
         transform: translateY(-100px) rotate(360deg);
@@ -371,7 +371,7 @@ body.dark-mode .theme-toggle {
 }
 
 body.dark-mode {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: linear-gradient(135deg, #2a1f0a 0%, #3d2e15 50%, #4a3820 100%);
 }
 
 body.dark-mode h1 {
@@ -986,6 +986,8 @@ body.dark-mode .download-link:hover {
     }
 }
 
+
+
 .page-section {
     display: none;
     min-height: 100vh;
@@ -1419,44 +1421,4 @@ body.dark-mode .chapter-description { color: var(--sand); }
 body.dark-mode .theme-toggle {
     background: rgba(255,255,255,0.1);
     border-color: var(--sky-blue);
-}
-
-/* Custom styling for the Relationship Counter Card */
-.relationship-wrapper {
-    margin-top: 32px;
-}
-
-.relationship-title {
-    font-family: 'Mrs Saint Delafield', cursive;
-    font-size: clamp(40px, 6vw, 56px);
-    color: var(--navy-blue);
-    margin-bottom: 4px;
-    line-height: 1;
-}
-
-body.dark-mode .relationship-title {
-    color: var(--sky-blue);
-}
-
-.relationship-block {
-    background: linear-gradient(135deg, #ff758c, #ff7eb3); 
-}
-
-body.dark-mode .relationship-block {
-    background: linear-gradient(135deg, #b83b5e, #6a2c70); 
-}
-
-.relationship-message {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(16px, 2vw, 20px);
-    color: var(--deep-navy);
-    font-style: italic;
-    margin-top: 28px;
-    line-height: 1.6;
-    padding: 0 10px;
-    position: relative;
-}
-
-body.dark-mode .relationship-message {
-    color: var(--sand);
 }
