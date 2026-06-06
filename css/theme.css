@@ -1,0 +1,115 @@
+body.dark-mode {
+    background: linear-gradient(135deg, #2a1f0a 0%, #3d2e15 50%, #4a3820 100%);
+}
+
+body.dark-mode h1 {
+    color: var(--sky-blue);
+    text-shadow: 2px 2px 8px rgba(168, 213, 226, 0.3);
+}
+
+body.dark-mode .subtitle      { color: var(--sand); }
+
+body.dark-mode .countdown-wrapper {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(168, 213, 226, 0.15);
+}
+
+body.dark-mode .countdown-label   { color: var(--sand); }
+body.dark-mode .countdown-birthday { color: var(--sky-blue); }
+
+body.dark-mode .section-title    { color: var(--sky-blue); }
+body.dark-mode .section-subtitle { color: var(--sand); }
+
+body.dark-mode .side-drawer {
+    background: #1a1a2e;
+    border-right-color: rgba(168, 213, 226, 0.12);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .drawer-name { color: var(--sky-blue); }
+
+body.dark-mode .bottom-nav {
+    background: #1a1a2e;
+    border-top-color: rgba(168, 213, 226, 0.15);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .nav-btn.active {
+    background: rgba(168, 213, 226, 0.1);
+}
+
+@media (min-width: 769px) {
+    body.dark-mode .nav-btn.active {
+        box-shadow: inset 3px 0 0 var(--sky-blue);
+    }
+    body.dark-mode .nav-btn.active .nav-label { color: var(--sky-blue); }
+}
+
+@media (max-width: 768px) {
+    body.dark-mode .nav-btn.active::after {
+        background: linear-gradient(90deg, var(--soft-blue), var(--sky-blue));
+    }
+    body.dark-mode .nav-btn.active .nav-label { color: var(--sky-blue); }
+}
+
+body.dark-mode .sticky-header {
+    background: rgba(22, 33, 62, 0.9);
+    border-bottom: 1px solid rgba(168, 213, 226, 0.2);
+}
+
+body.dark-mode .sticky-title { color: var(--sky-blue); }
+
+body.dark-mode .theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--sky-blue);
+    color: var(--sky-blue);
+}
+
+body.dark-mode .card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(168, 213, 226, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .card:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--sky-blue);
+    box-shadow: 0 12px 40px rgba(168, 213, 226, 0.2);
+}
+
+body.dark-mode .card-title       { color: var(--sky-blue); }
+body.dark-mode .card-message     { color: #e0e0e0; }
+body.dark-mode .card-date        { color: var(--sand); }
+body.dark-mode .card-date::before {
+    color: var(--sky-blue);
+    background: transparent;
+}
+body.dark-mode .card-toggle-icon { color: var(--sky-blue); }
+
+body.dark-mode .pinned-card .card {
+    border-color: rgba(168, 213, 226, 0.2);
+}
+
+body.dark-mode .pinned-badge {
+    color: var(--sky-blue);
+    background: rgba(168, 213, 226, 0.08);
+    border-color: rgba(168, 213, 226, 0.2);
+}
+
+body.dark-mode .chapter-title       { color: var(--sky-blue); }
+body.dark-mode .chapter-description { color: var(--sand); }
+
+body.dark-mode .card-download {
+    border-top-color: rgba(168, 213, 226, 0.3);
+}
+
+body.dark-mode .download-link {
+    background: linear-gradient(135deg, var(--soft-blue), var(--sky-blue));
+    box-shadow: 0 4px 12px rgba(90, 155, 212, 0.4);
+}
+
+body.dark-mode .download-link:hover {
+    background: linear-gradient(135deg, var(--sky-blue), var(--accent-gold));
+    box-shadow: 0 6px 20px rgba(168, 213, 226, 0.5);
+}
