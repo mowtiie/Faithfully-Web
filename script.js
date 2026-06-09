@@ -10,7 +10,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const sectionLoaded = { home: true, letters: false };
+const sectionLoaded = { home: true, letters: false, gallery: false };
 
 function switchSection(name, btn) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
@@ -24,6 +24,7 @@ function switchSection(name, btn) {
     if (!sectionLoaded[name]) {
         sectionLoaded[name] = true;
         if (name === 'letters') loadLetters();
+        if (name === 'gallery') loadGallery();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -193,6 +194,111 @@ function toggleCard(cardId) {
         cardContent.style.maxHeight = cardContent.scrollHeight + 'px';
         icon.style.transform = 'rotate(180deg)';
     }
+}
+
+let galleryPhotos = []; 
+let lightboxIndex = 0;
+
+function loadGallery() {
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = '<div class="gallery-loading">Loading photos... 🐱</div>';
+
+    db.collection('gallery')
+        .orderBy('order', 'asc')
+        .onSnapshot(snapshot => {
+            if (snapshot.empty) {
+                grid.innerHTML = '<div class="gallery-empty">No photos yet. 🐱</div>';
+                galleryPhotos = [];
+                return;
+            }
+
+            galleryPhotos = [];
+            snapshot.forEach(doc => galleryPhotos.push({ id: doc.id, ...doc.data() }));
+
+            grid.innerHTML = galleryPhotos.map((photo, i) => `
+                <div class="gallery-item" style="animation-delay:${i * 0.04}s"
+                     onclick="openLightbox(${i})">
+                    <div class="gallery-skeleton"></div>
+                    <img
+                        src="${escapeAttr(photo.thumbnailUrl || photo.imageUrl)}"
+                        alt="${escapeAttr(photo.caption || 'Cat photo')}"
+                        loading="lazy"
+                        onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';"
+                        onerror="this.closest('.gallery-item').classList.add('img-error');"
+                    >
+                    ${photo.caption ? `<div class="gallery-caption">${escapeHtml(photo.caption)}</div>` : ''}
+                </div>
+            `).join('');
+        }, err => {
+            grid.innerHTML = '<div class="gallery-empty">Could not load gallery.</div>';
+            console.error(err);
+        });
+}
+
+function openLightbox(index) {
+    if (!galleryPhotos || galleryPhotos.length === 0) return;
+    lightboxIndex = index;
+    renderLightbox();
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function renderLightbox() {
+    const photo = galleryPhotos[lightboxIndex];
+    if (!photo) return;
+    const img      = document.getElementById('lightboxImg');
+    const caption  = document.getElementById('lightboxCaption');
+
+    img.src = photo.imageUrl; 
+    img.alt = photo.caption || 'Cat photo';
+
+    if (photo.caption) {
+        caption.textContent = photo.caption;
+        caption.style.display = 'block';
+    } else {
+        caption.style.display = 'none';
+    }
+
+    const prev = document.querySelector('.lightbox-prev');
+    const next = document.querySelector('.lightbox-next');
+    if (prev && next) {
+        const onlyOne = galleryPhotos.length <= 1;
+        prev.style.display = onlyOne ? 'none' : 'flex';
+        next.style.display = onlyOne ? 'none' : 'flex';
+    }
+}
+
+function lightboxPrev() {
+    lightboxIndex = (lightboxIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
+    renderLightbox();
+}
+
+function lightboxNext() {
+    lightboxIndex = (lightboxIndex + 1) % galleryPhotos.length;
+    renderLightbox();
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('keydown', e => {
+    const lightbox = document.getElementById('lightbox');
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape')     closeLightbox();
+    if (e.key === 'ArrowLeft')  lightboxPrev();
+    if (e.key === 'ArrowRight') lightboxNext();
+});
+
+function escapeAttr(text) {
+    if (!text) return '';
+    return text.replace(/&/g, '&amp;')
+               .replace(/"/g, '&quot;')
+               .replace(/'/g, '&#39;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;');
 }
 
 function initThemeToggle() {

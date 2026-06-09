@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/letters.css">
+    <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
@@ -39,6 +40,10 @@
                 <button class="nav-btn" data-section="letters" onclick="switchSection('letters', this)">
                     <span class="nav-icon">💌</span>
                     <span class="nav-label">Letters</span>
+                </button>
+                <button class="nav-btn" data-section="gallery" onclick="switchSection('gallery', this)">
+                    <span class="nav-icon">🐱</span>
+                    <span class="nav-label">Gallery</span>
                 </button>
             </nav>
             <button class="drawer-collapse-btn" id="drawerCollapseBtn" aria-label="Toggle sidebar">
@@ -124,7 +129,29 @@
                 </div>
             </section>
 
+            <section class="page-section" id="section-gallery">
+                <header class="section-header">
+                    <h2 class="section-title">🐱 Gallery</h2>
+                    <p class="section-subtitle">A collection of cat photos, curated for you.</p>
+                </header>
+                <div class="container">
+                    <div class="gallery-grid" id="galleryGrid">
+                        <div class="gallery-loading">Loading photos... 🐱</div>
+                    </div>
+                </div>
+            </section>
+
         </main>
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <button class="lightbox-prev" onclick="event.stopPropagation(); lightboxPrev()" aria-label="Previous">‹</button>
+        <button class="lightbox-next" onclick="event.stopPropagation(); lightboxNext()" aria-label="Next">›</button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img class="lightbox-img" id="lightboxImg" src="" alt="">
+            <p class="lightbox-caption" id="lightboxCaption"></p>
+        </div>
     </div>
 
     <nav class="bottom-nav">
@@ -135,6 +162,10 @@
         <button class="nav-btn" data-section="letters" onclick="switchSection('letters', this)">
             <span class="nav-icon">💌</span>
             <span class="nav-label">Letters</span>
+        </button>
+        <button class="nav-btn" data-section="gallery" onclick="switchSection('gallery', this)">
+            <span class="nav-icon">🐱</span>
+            <span class="nav-label">Gallery</span>
         </button>
     </nav>
 
