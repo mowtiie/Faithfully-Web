@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌻 Her Website
+# 🌻 Faithfully Web
 
 ### *A quiet place for letters and memories.*
 
