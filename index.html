@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hilow po, Ali!</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/png" href="icons/icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Mrs+Saint+Delafield&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/letters.css">
+    <link rel="stylesheet" href="css/apps.css">
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/theme.css">
 </head>
@@ -40,6 +41,10 @@
                 <button class="nav-btn" data-section="letters" onclick="switchSection('letters', this)">
                     <span class="nav-icon">💌</span>
                     <span class="nav-label">Letters</span>
+                </button>
+                <button class="nav-btn" data-section="apps" onclick="switchSection('apps', this)">
+                    <span class="nav-icon">📱</span>
+                    <span class="nav-label">Apps</span>
                 </button>
                 <button class="nav-btn" data-section="gallery" onclick="switchSection('gallery', this)">
                     <span class="nav-icon">🐱</span>
@@ -102,10 +107,19 @@
                     <p class="section-subtitle">Words written from the heart, chapter by chapter.</p>
                 </header>
                 <div class="container">
-                    <div id="pinnedCards"></div>
-
                     <div id="chaptersContainer">
                         <div class="empty-state">Loading...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-section" id="section-apps">
+                <header class="section-header">
+                    <h2 class="section-title">📱 Apps</h2>
+                    <p class="section-subtitle">Little things I built, just for you.</p>
+                </header>
+                <div class="container">
+                    <div class="apps-grid" id="appsGrid">
                     </div>
                 </div>
             </section>
@@ -143,6 +157,10 @@
         <button class="nav-btn" data-section="letters" onclick="switchSection('letters', this)">
             <span class="nav-icon">💌</span>
             <span class="nav-label">Letters</span>
+        </button>
+        <button class="nav-btn" data-section="apps" onclick="switchSection('apps', this)">
+            <span class="nav-icon">📱</span>
+            <span class="nav-label">Apps</span>
         </button>
         <button class="nav-btn" data-section="gallery" onclick="switchSection('gallery', this)">
             <span class="nav-icon">🐱</span>

@@ -10,7 +10,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const sectionLoaded = { home: true, letters: false, gallery: false };
+const sectionLoaded = { home: true, letters: false, apps: false, gallery: false };
 
 function switchSection(name, btn) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
@@ -24,6 +24,7 @@ function switchSection(name, btn) {
     if (!sectionLoaded[name]) {
         sectionLoaded[name] = true;
         if (name === 'letters') loadLetters();
+        if (name === 'apps')    renderApps();
         if (name === 'gallery') loadGallery();
     }
 
@@ -94,56 +95,86 @@ function initAnniversaryCounter() {
     setInterval(tick, 60 * 60 * 1000);
 }
 
-const PINNED_CARDS = [
+const APPS = [
     {
-        title:       "So Ali won't forget...",
-        author:      "Vrixzandro",
-        message:     "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🩵",
-        buttonText:  "Faithful",
-        buttonIcon:  "🩷",
-        downloadUrl: "apps/Faithful.apk"
+        name:        "Faithful",
+        tagline:     "Quick notes for the thoughts you don't want to forget",
+        description: "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🩵",
+        icon:        "🩷",
+        iconImage:   "./icons/faithful.png",
+        version:     "v1.0",
+        downloadUrl: "./apps/faithful.apk",
+        sourceUrl:   "https://github.com/mowtiie/Faithful"
     },
     {
-        title:       "So Ali always feels heard...",
-        author:      "Vrixzandro",
-        message:     "Because some thoughts deserve to be revisited, not just remembered. Faithfully is a quiet companion to Faithful — a place where the little notes you've written can come back to you gently, in the moments you'd love to hear them again. Made so you'll never feel like anything you felt is lost. 🌻",
-        buttonText:  "Faithfully",
-        buttonIcon:  "🌻",
-        downloadUrl: "apps/Faithfully.apk"
+        name:        "Faithfully",
+        tagline:     "Your written thoughts, gently coming back to you",
+        description: "Because some thoughts deserve to be revisited, not just remembered. Faithfully is a quiet companion to Faithful — a place where the little notes you've written can come back to you gently, in the moments you'd love to hear them again. Made so you'll never feel like anything you felt is lost. 🌻",
+        icon:        "🌻",
+        iconImage:   "./icons/faithfully.png",
+        version:     "v1.0",
+        downloadUrl: "./apps/faithfully.apk",
+        sourceUrl:   "https://github.com/mowtiie/Faithfully-App"
     }
 ];
 
-function renderPinnedCards() {
-    const container = document.getElementById('pinnedCards');
-    if (!container) return;
+function renderApps() {
+    const grid = document.getElementById('appsGrid');
+    if (!grid) return;
 
-    container.innerHTML = PINNED_CARDS.map((card, i) => `
-        <div class="pinned-card" id="pinnedCard-${i}">
-            <div class="pinned-badge">📌 Pinned</div>
-            <div class="card" onclick="toggleCard('pinned-${i}')">
-                <div class="card-header">
-                    <div class="card-title">${escapeHtml(card.title)}</div>
-                    <div class="card-date">${escapeHtml(card.author)}</div>
+    if (APPS.length === 0) {
+        grid.innerHTML = '<div class="empty-state small">No apps yet.</div>';
+        return;
+    }
+
+    grid.innerHTML = APPS.map((app, i) => {
+        const iconHtml = app.iconImage
+            ? `<img class="app-icon-img" src="${escapeAttr(app.iconImage)}" alt="${escapeAttr(app.name)} icon"
+                    onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'app-icon-emoji',textContent:${JSON.stringify(app.icon || '📱')}}))">`
+            : `<span class="app-icon-emoji">${escapeHtml(app.icon || '📱')}</span>`;
+
+        return `
+            <div class="app-card" id="app-card-${i}">
+                <div class="app-card-header" onclick="toggleApp(${i})">
+                    <div class="app-icon">${iconHtml}</div>
+                    <div class="app-info">
+                        <div class="app-name-row">
+                            <span class="app-name">${escapeHtml(app.name)}</span>
+                            ${app.version ? `<span class="app-version">${escapeHtml(app.version)}</span>` : ''}
+                        </div>
+                        <div class="app-tagline">${escapeHtml(app.tagline)}</div>
+                    </div>
+                    <div class="app-chevron" id="app-chevron-${i}">▼</div>
                 </div>
-                <div class="card-content" id="card-content-pinned-${i}">
-                    <div class="card-message">${escapeHtml(card.message)}</div>
-                    <div class="card-download">
-                        <a href="${escapeAttr(card.downloadUrl)}" class="download-link" download onclick="event.stopPropagation()">
-                            <span class="download-icon">${escapeHtml(card.buttonIcon)}</span>
-                            <span class="download-text">${escapeHtml(card.buttonText)}</span>
-                            <span class="download-arrow">→</span>
+                <div class="app-card-body" id="app-body-${i}">
+                    <p class="app-description">${escapeHtml(app.description)}</p>
+                    <div class="app-actions">
+                        <a href="${escapeAttr(app.downloadUrl)}" class="app-btn app-btn-primary" download>
+                            <span class="app-btn-icon">⬇️</span>
+                            <span>Download</span>
+                        </a>
+                        <a href="${escapeAttr(app.sourceUrl)}" class="app-btn app-btn-secondary" target="_blank" rel="noopener">
+                            <span class="app-btn-icon">🔗</span>
+                            <span>Source</span>
                         </a>
                     </div>
                 </div>
-                <div class="card-toggle-icon">▼</div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+}
+
+function toggleApp(i) {
+    const card    = document.getElementById('app-card-' + i);
+    const body    = document.getElementById('app-body-' + i);
+    const chevron = document.getElementById('app-chevron-' + i);
+
+    const isOpen = card.classList.toggle('expanded');
+    body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0';
+    chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
 }
 
 function loadLetters() {
-    renderPinnedCards();
-
     const container = document.getElementById('chaptersContainer');
     container.innerHTML = '<div class="empty-state" style="opacity:.5">Loading...</div>';
 
