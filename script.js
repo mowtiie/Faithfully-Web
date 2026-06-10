@@ -94,7 +94,56 @@ function initAnniversaryCounter() {
     setInterval(tick, 60 * 60 * 1000);
 }
 
+const PINNED_CARDS = [
+    {
+        title:       "So Ali won't forget...",
+        author:      "Vrixzandro",
+        message:     "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🩵",
+        buttonText:  "Faithful",
+        buttonIcon:  "🩷",
+        downloadUrl: "apps/Faithful.apk"
+    },
+    {
+        title:       "So Ali always feels heard...",
+        author:      "Vrixzandro",
+        message:     "Because some thoughts deserve to be revisited, not just remembered. Faithfully is a quiet companion to Faithful — a place where the little notes you've written can come back to you gently, in the moments you'd love to hear them again. Made so you'll never feel like anything you felt is lost. 🌻",
+        buttonText:  "Faithfully",
+        buttonIcon:  "🌻",
+        downloadUrl: "apps/Faithfully.apk"
+    }
+];
+
+function renderPinnedCards() {
+    const container = document.getElementById('pinnedCards');
+    if (!container) return;
+
+    container.innerHTML = PINNED_CARDS.map((card, i) => `
+        <div class="pinned-card" id="pinnedCard-${i}">
+            <div class="pinned-badge">📌 Pinned</div>
+            <div class="card" onclick="toggleCard('pinned-${i}')">
+                <div class="card-header">
+                    <div class="card-title">${escapeHtml(card.title)}</div>
+                    <div class="card-date">${escapeHtml(card.author)}</div>
+                </div>
+                <div class="card-content" id="card-content-pinned-${i}">
+                    <div class="card-message">${escapeHtml(card.message)}</div>
+                    <div class="card-download">
+                        <a href="${escapeAttr(card.downloadUrl)}" class="download-link" download onclick="event.stopPropagation()">
+                            <span class="download-icon">${escapeHtml(card.buttonIcon)}</span>
+                            <span class="download-text">${escapeHtml(card.buttonText)}</span>
+                            <span class="download-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-toggle-icon">▼</div>
+            </div>
+        </div>
+    `).join('');
+}
+
 function loadLetters() {
+    renderPinnedCards();
+
     const container = document.getElementById('chaptersContainer');
     container.innerHTML = '<div class="empty-state" style="opacity:.5">Loading...</div>';
 

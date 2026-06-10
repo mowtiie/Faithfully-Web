@@ -102,26 +102,7 @@
                     <p class="section-subtitle">Words written from the heart, chapter by chapter.</p>
                 </header>
                 <div class="container">
-                    <div class="pinned-card" id="pinnedCard">
-                        <div class="pinned-badge">📌 Pinned</div>
-                        <div class="card" onclick="toggleCard('pinned')">
-                            <div class="card-header">
-                                <div class="card-title">So Ali won't forget...</div>
-                                <div class="card-date">Vrixzandro</div>
-                            </div>
-                            <div class="card-content" id="card-content-pinned">
-                                <div class="card-message">I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🩵</div>
-                                <div class="card-download">
-                                    <a href="./faithful.apk" class="download-link" download onclick="event.stopPropagation()">
-                                        <span class="download-icon">🩷</span>
-                                        <span class="download-text">Faithful</span>
-                                        <span class="download-arrow">→</span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="card-toggle-icon">▼</div>
-                        </div>
-                    </div>
+                    <div id="pinnedCards"></div>
 
                     <div id="chaptersContainer">
                         <div class="empty-state">Loading...</div>

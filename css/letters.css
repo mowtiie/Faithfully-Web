@@ -141,10 +141,14 @@
 
 .pinned-card {
     position: relative;
-    margin-bottom: 48px;
+    margin-bottom: 20px; 
     display: flex;
     flex-direction: column;
     align-items: flex-start; 
+}
+
+.pinned-card:last-of-type {
+    margin-bottom: 48px;
 }
 
 .pinned-card .card {
@@ -173,7 +177,7 @@
     text-transform: uppercase;
 }
 
-.pinned-card::after {
+.pinned-card:last-of-type::after {
     content: '';
     display: block;
     height: 1px;
