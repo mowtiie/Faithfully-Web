@@ -99,10 +99,10 @@ const APPS = [
     {
         name:        "Faithful",
         tagline:     "Quick notes for the thoughts you don't want to forget",
-        description: "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🩵",
-        icon:        "🩷",
+        description: "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🐝",
+        icon:        "🐝",
         iconImage:   "./icons/faithful.png",
-        version:     "v1.0",
+        version:     "v1.1",
         downloadUrl: "./apps/faithful.apk",
         sourceUrl:   "https://github.com/mowtiie/Faithful"
     },
