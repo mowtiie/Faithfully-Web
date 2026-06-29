@@ -46,7 +46,7 @@ function createFloatingHearts() {
 }
 
 function initCountdown() {
-    const birthday = new Date('2026-06-16T00:00:00');
+    const birthday = new Date('2027-06-16T00:00:00');
 
     function tick() {
         const now  = new Date();
