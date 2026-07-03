@@ -8,7 +8,155 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const db   = firebase.firestore();
+const auth = firebase.auth();
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+let authMode = 'guest';
+
+const ALLOWED_UIDS = new Set([
+    "1V2A4PEmBZXqSe6fHZkpIg1go2g1",   
+    "06aw3OBmoMaH6gYVcN59VHy1JDF3"              
+]);
+
+const MOCK_CHAPTERS = [
+    { id: 'mock-ch-1', title: 'How it started',
+      description: 'The very first pages of us — sample chapter.', order: 0 },
+    { id: 'mock-ch-2', title: 'Little everyday things',
+      description: 'Notes about the small moments — sample chapter.', order: 1 },
+    { id: 'mock-ch-3', title: 'For the quiet days',
+      description: 'Words to come back to — sample chapter.', order: 2 }
+];
+
+const MOCK_CARDS = [
+    { id: 'mock-c-1', chapterId: 'mock-ch-1', order: 0,
+      title: 'A sample first letter',
+      dateLabel: 'Sample',
+      message: 'This is what a real letter looks like on this site — but the actual words in here are only visible to the person these letters were written for. Sign in to see the real ones. 🌻' },
+    { id: 'mock-c-2', chapterId: 'mock-ch-1', order: 1,
+      title: 'Just an example',
+      dateLabel: 'Sample',
+      message: 'Each card expands when you tap it, so you can read the message inside. This one is a placeholder so demo visitors can see the layout. 🩵' },
+    { id: 'mock-c-3', chapterId: 'mock-ch-2', order: 0,
+      title: 'Sample about coffee mornings',
+      dateLabel: 'Sample',
+      message: 'A real letter might tell a small story, share an inside joke, or say something that only makes sense to the two people it lives between. This is not that letter — this is just a placeholder. 🌻' },
+    { id: 'mock-c-4', chapterId: 'mock-ch-2', order: 1,
+      title: 'Sample about rainy days',
+      dateLabel: 'Sample',
+      message: 'The chapters help group letters into moods and moments. This one belongs to the "everyday things" chapter. Nothing to see here — just a demo. 🩷' },
+    { id: 'mock-c-5', chapterId: 'mock-ch-3', order: 0,
+      title: 'A sample for the quiet days',
+      dateLabel: 'Sample',
+      message: 'Not every letter is meant to be exciting — some are just gentle reminders that someone is thinking of you. This is a placeholder version of one of those. 🌻' }
+];
+
+const MOCK_GALLERY = [
+    { id: 'mock-g-1', order: 0, caption: 'Sample photo 🐱',
+      imageUrl:     'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400' },
+    { id: 'mock-g-2', order: 1, caption: 'Another sample 🐱',
+      imageUrl:     'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=1200',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=400' },
+    { id: 'mock-g-3', order: 2, caption: 'One more sample 🐱',
+      imageUrl:     'https://images.unsplash.com/photo-1548247416-ec66f4900b2e?w=1200',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1548247416-ec66f4900b2e?w=400' },
+    { id: 'mock-g-4', order: 3, caption: 'Sample photo 🐱',
+      imageUrl:     'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=1200',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400' }
+];
+
+function openLogin(e) {
+    if (e) e.preventDefault();
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('loginPassword').value    = '';
+    document.getElementById('loginOverlay').classList.add('active');
+    setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+}
+
+function closeLogin() {
+    document.getElementById('loginOverlay').classList.remove('active');
+}
+
+function handleAuthBtnClick() {
+    if (authMode === 'authed') {
+        if (confirm('Sign out?')) auth.signOut();
+    } else {
+        openLogin();
+    }
+}
+
+async function submitLogin(e) {
+    e.preventDefault();
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl  = document.getElementById('loginError');
+    const submitBtn  = document.getElementById('loginSubmit');
+    const submitText = document.getElementById('loginSubmitText');
+
+    errorEl.textContent = '';
+    submitBtn.disabled = true;
+    submitText.textContent = 'Signing in...';
+
+    try {
+        await auth.signInWithEmailAndPassword(email, password);
+        closeLogin();
+    } catch (err) {
+        let message = 'Sign-in failed. Please try again.';
+        if (err.code === 'auth/invalid-email')       message = 'That email doesn\'t look right.';
+        else if (err.code === 'auth/user-not-found') message = 'No account found with that email.';
+        else if (err.code === 'auth/wrong-password' ||
+                 err.code === 'auth/invalid-credential') message = 'Wrong email or password.';
+        else if (err.code === 'auth/too-many-requests') message = 'Too many attempts. Please wait a moment.';
+        errorEl.textContent = message;
+    } finally {
+        submitBtn.disabled = false;
+        submitText.textContent = 'Sign In';
+    }
+    return false;
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        const overlay = document.getElementById('loginOverlay');
+        if (overlay && overlay.classList.contains('active')) closeLogin();
+    }
+});
+
+auth.onAuthStateChanged(user => {
+    if (user && ALLOWED_UIDS.has(user.uid)) {
+        authMode = 'authed';
+        document.body.classList.remove('demo-mode');
+        document.body.classList.remove('has-demo-banner');
+        document.getElementById('demoBanner').classList.remove('visible');
+        document.getElementById('authBtnIcon').textContent = '👤';
+        document.getElementById('authBtn').setAttribute('aria-label', 'Signed in — tap to sign out');
+    } else {
+        authMode = 'guest';
+        document.body.classList.add('demo-mode');
+        document.body.classList.add('has-demo-banner');
+        document.getElementById('demoBanner').classList.add('visible');
+        document.getElementById('authBtnIcon').textContent = '🔒';
+        document.getElementById('authBtn').setAttribute('aria-label', 'Sign in');
+
+        if (user) {
+            console.warn('Signed-in UID is not on the allow list. Signing out.');
+            auth.signOut();
+        }
+    }
+
+    sectionLoaded.home    = true;
+    sectionLoaded.letters = false;
+    sectionLoaded.gallery = false;
+
+    const activeSection = document.querySelector('.page-section.active');
+    if (activeSection) {
+        const id = activeSection.id.replace('section-', '');
+        if (id === 'letters') { sectionLoaded.letters = true; loadLetters(); }
+        if (id === 'gallery') { sectionLoaded.gallery = true; loadGallery(); }
+    }
+});
 
 const sectionLoaded = { home: true, letters: false, apps: false, gallery: false };
 
@@ -99,12 +247,12 @@ const APPS = [
     {
         name:        "Faithful",
         tagline:     "Quick notes for the thoughts you don't want to forget",
-        description: "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🐝",
-        icon:        "🐝",
+        description: "I know that you've been struggling with your short-term memory, Ali. So I made something for you, something that will help you quickly and easily write down your thoughts so you won't forget about them ever again. 🩵",
+        icon:        "🩷",
         iconImage:   "./icons/faithful.png",
-        version:     "v1.1",
-        downloadUrl: "./apps/faithful.apk",
-        sourceUrl:   "https://github.com/mowtiie/Faithful"
+        version:     "v1.0",
+        downloadUrl: "./faithful.apk",
+        sourceUrl:   "https://github.com/your-username/faithful"
     },
     {
         name:        "Faithfully",
@@ -113,8 +261,8 @@ const APPS = [
         icon:        "🌻",
         iconImage:   "./icons/faithfully.png",
         version:     "v1.0",
-        downloadUrl: "./apps/faithfully.apk",
-        sourceUrl:   "https://github.com/mowtiie/Faithfully-App"
+        downloadUrl: "./faithfully.apk",
+        sourceUrl:   "https://github.com/your-username/faithfully"
     }
 ];
 
@@ -175,6 +323,11 @@ function toggleApp(i) {
 }
 
 function loadLetters() {
+    if (authMode === 'guest') {
+        renderLettersFromData(MOCK_CHAPTERS, MOCK_CARDS);
+        return;
+    }
+
     const container = document.getElementById('chaptersContainer');
     container.innerHTML = '<div class="empty-state" style="opacity:.5">Loading...</div>';
 
@@ -226,6 +379,40 @@ function loadLetters() {
             container.innerHTML = '<div class="empty-state">Could not load letters. Check Firestore rules.</div>';
             console.error(err);
         });
+}
+
+function renderLettersFromData(chapters, cards) {
+    const container = document.getElementById('chaptersContainer');
+    if (!chapters || chapters.length === 0) {
+        container.innerHTML = '<div class="empty-state">No chapters.</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    chapters.forEach(chapter => {
+        const chapterEl = document.createElement('div');
+        chapterEl.className = 'chapter-block';
+        chapterEl.id = 'chapter-' + chapter.id;
+        chapterEl.innerHTML = `
+            <div class="chapter-header">
+                <div class="chapter-title-row">
+                    <span class="chapter-icon">📖</span>
+                    <h3 class="chapter-title">${escapeHtml(chapter.title)}</h3>
+                </div>
+                ${chapter.description
+                    ? `<p class="chapter-description">${escapeHtml(chapter.description)}</p>`
+                    : ''}
+            </div>
+            <div class="cards-grid chapter-cards" id="cards-${chapter.id}"></div>
+        `;
+        container.appendChild(chapterEl);
+
+        const cardsInChapter = cards
+            .filter(c => c.chapterId === chapter.id)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        const cardsGrid = document.getElementById('cards-' + chapter.id);
+        renderChapterCards(cardsGrid, cardsInChapter, chapter.id);
+    });
 }
 
 function renderChapterCards(grid, cards, chapterId) {
@@ -281,6 +468,12 @@ let lightboxIndex = 0;
 
 function loadGallery() {
     const grid = document.getElementById('galleryGrid');
+
+    if (authMode === 'guest') {
+        renderGalleryFromData(MOCK_GALLERY);
+        return;
+    }
+
     grid.innerHTML = '<div class="gallery-loading">Loading photos... 🐱</div>';
 
     db.collection('gallery')
@@ -292,27 +485,38 @@ function loadGallery() {
                 return;
             }
 
-            galleryPhotos = [];
-            snapshot.forEach(doc => galleryPhotos.push({ id: doc.id, ...doc.data() }));
-
-            grid.innerHTML = galleryPhotos.map((photo, i) => `
-                <div class="gallery-item" style="animation-delay:${i * 0.04}s"
-                     onclick="openLightbox(${i})">
-                    <div class="gallery-skeleton"></div>
-                    <img
-                        src="${escapeAttr(photo.thumbnailUrl || photo.imageUrl)}"
-                        alt="${escapeAttr(photo.caption || 'Cat photo')}"
-                        loading="lazy"
-                        onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';"
-                        onerror="this.closest('.gallery-item').classList.add('img-error');"
-                    >
-                    ${photo.caption ? `<div class="gallery-caption">${escapeHtml(photo.caption)}</div>` : ''}
-                </div>
-            `).join('');
+            const photos = [];
+            snapshot.forEach(doc => photos.push({ id: doc.id, ...doc.data() }));
+            renderGalleryFromData(photos);
         }, err => {
             grid.innerHTML = '<div class="gallery-empty">Could not load gallery.</div>';
             console.error(err);
         });
+}
+
+function renderGalleryFromData(photos) {
+    const grid = document.getElementById('galleryGrid');
+    galleryPhotos = photos || [];
+
+    if (galleryPhotos.length === 0) {
+        grid.innerHTML = '<div class="gallery-empty">No photos yet. 🐱</div>';
+        return;
+    }
+
+    grid.innerHTML = galleryPhotos.map((photo, i) => `
+        <div class="gallery-item" style="animation-delay:${i * 0.04}s"
+             onclick="openLightbox(${i})">
+            <div class="gallery-skeleton"></div>
+            <img
+                src="${escapeAttr(photo.thumbnailUrl || photo.imageUrl)}"
+                alt="${escapeAttr(photo.caption || 'Cat photo')}"
+                loading="lazy"
+                onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';"
+                onerror="this.closest('.gallery-item').classList.add('img-error');"
+            >
+            ${photo.caption ? `<div class="gallery-caption">${escapeHtml(photo.caption)}</div>` : ''}
+        </div>
+    `).join('');
 }
 
 function openLightbox(index) {

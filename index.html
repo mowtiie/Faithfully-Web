@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hilow po, Ali!</title>
-    <link rel="icon" type="image/png" href="icons/icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Mrs+Saint+Delafield&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/letters.css">
     <link rel="stylesheet" href="css/apps.css">
     <link rel="stylesheet" href="css/gallery.css">
+    <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
@@ -22,9 +23,45 @@
         <span class="sticky-title">Read well po...</span>
     </nav>
 
+    <div class="demo-banner" id="demoBanner">
+        <span>👀 Demo mode — <a href="#" onclick="openLogin(event)">sign in</a> to see the real letters</span>
+    </div>
+
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
         <span class="theme-icon">🌙</span>
     </button>
+
+    <button class="auth-btn" id="authBtn" onclick="handleAuthBtnClick()" aria-label="Sign in">
+        <span id="authBtnIcon">🔒</span>
+    </button>
+
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-bg-hearts" id="loginBgHearts"></div>
+        <button class="login-close" onclick="closeLogin()" aria-label="Close">✕</button>
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="login-logo">🌻</div>
+                <h1 class="login-title">For Ali</h1>
+                <p class="login-subtitle">Sign in to read your letters</p>
+            </div>
+
+            <form class="login-form" onsubmit="return submitLogin(event)">
+                <label class="login-label" for="loginEmail">Email</label>
+                <input class="login-input" id="loginEmail" type="email" autocomplete="email" required>
+
+                <label class="login-label" for="loginPassword">Password</label>
+                <input class="login-input" id="loginPassword" type="password" autocomplete="current-password" required>
+
+                <div class="login-error" id="loginError"></div>
+
+                <button class="login-submit" type="submit" id="loginSubmit">
+                    <span id="loginSubmitText">Sign In</span>
+                </button>
+
+                <p class="login-hint">Only Ali has an account here. If you don't have one, you're welcome to keep exploring in demo mode. 🌻</p>
+            </form>
+        </div>
+    </div>
 
     <div class="app-shell">
 
@@ -169,6 +206,7 @@
     </nav>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="script.js"></script>
 </body>
