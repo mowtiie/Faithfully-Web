@@ -63,7 +63,7 @@ What began as a single static page turned into a full system: chapters of letter
 
 | Home | Letters | Gallery | Dark mode |
 |:---:|:---:|:---:|:---:|
-| ![Home](screenshots/home.png) | ![Letters](screenshots/letters.png) | ![Gallery](screenshots/gallery.png) | ![Dark mode](screenshots/dark-mode.png) |
+| ![Home](screenshots/screenshot_1.png) | ![Dark Mode](screenshots/screenshot_2.png) | ![Auth](screenshots/screenshot_3.png) | ![Apps](screenshots/screenshot_4.png) |
 
 ---
 
