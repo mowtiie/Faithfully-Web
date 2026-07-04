@@ -14,7 +14,6 @@ const auth = firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 let authMode = 'guest';
-
 const ALLOWED_UIDS = new Set([
     "1V2A4PEmBZXqSe6fHZkpIg1go2g1",   
     "06aw3OBmoMaH6gYVcN59VHy1JDF3"              
@@ -146,6 +145,8 @@ auth.onAuthStateChanged(user => {
         }
     }
 
+    renderHomeContent();
+
     sectionLoaded.home    = true;
     sectionLoaded.letters = false;
     sectionLoaded.gallery = false;
@@ -193,12 +194,68 @@ function createFloatingHearts() {
     }
 }
 
-function initCountdown() {
-    const birthday = new Date('2027-06-16T00:00:00');
+const HOME_CONTENT = {
+    real: {
+        title:            "To Alliyannah Faith.",
+        subtitle:         "To show my appreciation and care for you, <br>here is how I will respond for what you have been doing for me. <br>In this way, I hope that I will get to know you more in the future.",
+        stickyTitle:      "Read well po...",
+        countdownLabel:   "Days until Ali's Birthday 🎂",
+        countdownFinish:  "Happy Birthday, Ali! 🎉🎂",
+        anniversaryLabel: "Since our beginning 💛",
+        anniversaryUnit:  "days together"
+    },
+    mock: {
+        title:            "To Someone Special.",
+        subtitle:         "A quiet place made just for you — letters, memories, and countdowns for the moments ahead. 🌻",
+        stickyTitle:      "For Someone Special",
+        countdownLabel:   "Counting down to something wonderful 🎂",
+        countdownFinish:  "Something wonderful is here! 🎉",
+        anniversaryLabel: "Days on this journey 💛",
+        anniversaryUnit:  "days so far"
+    }
+};
 
+function getMockCountdownTarget() {
+    const now = new Date();
+    return new Date(now.getFullYear() + 1, 11, 31, 0, 0, 0); 
+}
+
+function getRealCountdownTarget() {
+    return new Date('2026-06-16T00:00:00');
+}
+
+function getAnniversaryStart() {
+    if (authMode === 'authed') return new Date('2026-02-18T00:00:00');
+
+    let stored = localStorage.getItem('demoFirstVisit');
+    if (!stored) {
+        stored = new Date().toISOString();
+        localStorage.setItem('demoFirstVisit', stored);
+    }
+    return new Date(stored);
+}
+
+function renderHomeContent() {
+    const c = authMode === 'authed' ? HOME_CONTENT.real : HOME_CONTENT.mock;
+
+    document.getElementById('homeTitle').textContent       = c.title;
+    document.getElementById('homeSubtitle').innerHTML      = c.subtitle;
+    document.getElementById('stickyTitle').textContent     = c.stickyTitle;
+    document.getElementById('countdownLabel').textContent  = c.countdownLabel;
+    document.getElementById('countdownBirthday').textContent = c.countdownFinish;
+    document.getElementById('anniversaryLabel').textContent = c.anniversaryLabel;
+    document.getElementById('anniversaryUnit').textContent  = c.anniversaryUnit;
+
+    document.getElementById('countdownBlocks').style.display   = 'flex';
+    document.getElementById('countdownBirthday').style.display = 'none';
+}
+
+function initCountdown() {
     function tick() {
-        const now  = new Date();
-        const diff = birthday - now;
+        const target = authMode === 'authed'
+                ? getRealCountdownTarget()
+                : getMockCountdownTarget();
+        const diff = target - new Date();
 
         if (diff <= 0) {
             document.getElementById('countdownBlocks').style.display   = 'none';
@@ -222,18 +279,14 @@ function initCountdown() {
 }
 
 function initAnniversaryCounter() {
-    const beginning = new Date('2026-02-18T00:00:00');
     const numEl = document.getElementById('anniversaryDays');
     if (!numEl) return;
 
     function tick() {
-        const now  = new Date();
-        const diff = now - beginning;
+        const start = getAnniversaryStart();
+        const diff  = new Date() - start;
 
-        if (diff < 0) {
-            numEl.textContent = '0';
-            return;
-        }
+        if (diff < 0) { numEl.textContent = '0'; return; }
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         numEl.textContent = days;
@@ -252,7 +305,7 @@ const APPS = [
         iconImage:   "./icons/faithful.png",
         version:     "v1.0",
         downloadUrl: "./faithful.apk",
-        sourceUrl:   "https://github.com/your-username/faithful"
+        sourceUrl:   "https://github.com/mowtiie/Faithful"
     },
     {
         name:        "Faithfully",
@@ -262,7 +315,7 @@ const APPS = [
         iconImage:   "./icons/faithfully.png",
         version:     "v1.0",
         downloadUrl: "./faithfully.apk",
-        sourceUrl:   "https://github.com/your-username/faithfully"
+        sourceUrl:   "https://github.com/mowtiie/Faithfully-App"
     }
 ];
 
@@ -632,6 +685,7 @@ function escapeHtml(text) {
 
 document.addEventListener('DOMContentLoaded', function () {
     createFloatingHearts();
+    renderHomeContent();
     initCountdown();
     initAnniversaryCounter();
     initThemeToggle();
