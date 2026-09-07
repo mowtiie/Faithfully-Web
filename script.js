@@ -15,8 +15,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 let authMode = 'guest';
 const ALLOWED_UIDS = new Set([
-    "1V2A4PEmBZXqSe6fHZkpIg1go2g1",   
-    "06aw3OBmoMaH6gYVcN59VHy1JDF3"              
+    "h0yjVpgq6pbreAD3aZvQOcaOp4F3"              
 ]);
 
 const MOCK_CHAPTERS = [
