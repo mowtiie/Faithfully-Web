@@ -15,7 +15,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 let authMode = 'guest';
 const ALLOWED_UIDS = new Set([
-    "h0yjVpgq6pbreAD3aZvQOcaOp4F3"              
+    "h0yjVpgq6pbreAD3aZvQOcaOp4F3"
 ]);
 
 const MOCK_CHAPTERS = [
@@ -146,6 +146,9 @@ auth.onAuthStateChanged(user => {
 
     renderHomeContent();
 
+    if (anniversaryTick) anniversaryTick();
+    if (countdownTick)   countdownTick();
+
     sectionLoaded.home    = true;
     sectionLoaded.letters = false;
     sectionLoaded.gallery = false;
@@ -216,11 +219,11 @@ const HOME_CONTENT = {
 
 function getMockCountdownTarget() {
     const now = new Date();
-    return new Date(now.getFullYear() + 1, 11, 31, 0, 0, 0); 
+    return new Date(now.getFullYear() + 1, 11, 31, 0, 0, 0);
 }
 
 function getRealCountdownTarget() {
-    return new Date('2026-06-16T00:00:00');
+    return new Date('2027-06-16T00:00:00');
 }
 
 function getAnniversaryStart() {
@@ -249,8 +252,10 @@ function renderHomeContent() {
     document.getElementById('countdownBirthday').style.display = 'none';
 }
 
+let countdownTick = null;
+
 function initCountdown() {
-    function tick() {
+    countdownTick = function tick() {
         const target = authMode === 'authed'
                 ? getRealCountdownTarget()
                 : getMockCountdownTarget();
@@ -262,6 +267,9 @@ function initCountdown() {
             return;
         }
 
+        document.getElementById('countdownBlocks').style.display   = 'flex';
+        document.getElementById('countdownBirthday').style.display = 'none';
+
         const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -271,17 +279,19 @@ function initCountdown() {
         document.getElementById('cd-hours').textContent   = String(hours).padStart(2, '0');
         document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
         document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
-    }
+    };
 
-    tick();
-    setInterval(tick, 1000);
+    countdownTick();
+    setInterval(countdownTick, 1000);
 }
+
+let anniversaryTick = null;
 
 function initAnniversaryCounter() {
     const numEl = document.getElementById('anniversaryDays');
     if (!numEl) return;
 
-    function tick() {
+    anniversaryTick = function tick() {
         const start = getAnniversaryStart();
         const diff  = new Date() - start;
 
@@ -289,10 +299,10 @@ function initAnniversaryCounter() {
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         numEl.textContent = days;
-    }
+    };
 
-    tick();
-    setInterval(tick, 60 * 60 * 1000);
+    anniversaryTick();
+    setInterval(anniversaryTick, 60 * 60 * 1000);
 }
 
 const APPS = [
@@ -515,7 +525,7 @@ function toggleCard(cardId) {
     }
 }
 
-let galleryPhotos = []; 
+let galleryPhotos = [];
 let lightboxIndex = 0;
 
 function loadGallery() {
@@ -586,7 +596,7 @@ function renderLightbox() {
     const img      = document.getElementById('lightboxImg');
     const caption  = document.getElementById('lightboxCaption');
 
-    img.src = photo.imageUrl; 
+    img.src = photo.imageUrl;
     img.alt = photo.caption || 'Cat photo';
 
     if (photo.caption) {
