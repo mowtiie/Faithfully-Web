@@ -161,7 +161,14 @@
                 </header>
                 <div class="container">
                     <div id="chaptersContainer">
-                        <div class="empty-state">Loading...</div>
+                        <div class="chapter-block" aria-hidden="true">
+                            <div class="skeleton skeleton-heading"></div>
+                            <div class="cards-grid">
+                                <div class="skeleton skeleton-card"></div>
+                                <div class="skeleton skeleton-card"></div>
+                                <div class="skeleton skeleton-card"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -190,6 +197,25 @@
             </section>
 
         </main>
+    </div>
+
+    <div class="reader" id="reader" role="dialog" aria-modal="true" aria-labelledby="readerTitle" aria-hidden="true">
+        <div class="reader-backdrop" onclick="closeReader()"></div>
+        <button class="reader-close" id="readerClose" type="button" onclick="closeReader()" aria-label="Close letter">✕</button>
+        <article class="reader-paper" id="readerPaper">
+            <p class="reader-eyebrow" id="readerEyebrow"></p>
+            <h3 class="reader-title" id="readerTitle"></h3>
+            <div class="reader-body" id="readerBody"></div>
+            <p class="reader-sign" id="readerSign">
+                <span class="reader-sign-label">From,</span>
+                <span class="reader-sign-name" id="readerDate"></span>
+            </p>
+            <nav class="reader-nav" aria-label="Letters in this chapter">
+                <button class="reader-step" id="readerPrev" type="button" onclick="readerStep(-1)">← Previous</button>
+                <span class="reader-count" id="readerCount"></span>
+                <button class="reader-step" id="readerNext" type="button" onclick="readerStep(1)">Next →</button>
+            </nav>
+        </article>
     </div>
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">

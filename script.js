@@ -408,6 +408,23 @@ function toggleApp(i) {
     chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
 }
 
+const LETTERS_SKELETON = `
+    <div class="chapter-block" aria-hidden="true">
+        <div class="skeleton skeleton-heading"></div>
+        <div class="cards-grid">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+        </div>
+    </div>`;
+
+// chapterId -> the (sorted) letters currently rendered, used by the reader.
+const letterStore = {};
+// chapterId -> { title, number }
+const chapterMeta = {};
+// { chapterId, index } while a letter is open in the reader.
+let readerState = null;
+
 function loadLetters() {
     if (authMode === 'guest') {
         renderLettersFromData(MOCK_CHAPTERS, MOCK_CARDS);
@@ -415,7 +432,7 @@ function loadLetters() {
     }
 
     const container = document.getElementById('chaptersContainer');
-    container.innerHTML = '<div class="empty-state" style="opacity:.5">Loading...</div>';
+    container.innerHTML = LETTERS_SKELETON;
 
     db.collection('chapters')
         .orderBy('order', 'asc')
@@ -430,25 +447,8 @@ function loadLetters() {
 
             container.innerHTML = '';
 
-            chapters.forEach(chapter => {
-                const chapterEl = document.createElement('div');
-                chapterEl.className = 'chapter-block';
-                chapterEl.id = 'chapter-' + chapter.id;
-                chapterEl.innerHTML = `
-                    <div class="chapter-header">
-                        <div class="chapter-title-row">
-                            <span class="chapter-icon">📖</span>
-                            <h3 class="chapter-title">${escapeHtml(chapter.title)}</h3>
-                        </div>
-                        ${chapter.description
-                            ? `<p class="chapter-description">${escapeHtml(chapter.description)}</p>`
-                            : ''}
-                    </div>
-                    <div class="cards-grid chapter-cards" id="cards-${chapter.id}">
-                        <div class="empty-state small">Loading...</div>
-                    </div>
-                `;
-                container.appendChild(chapterEl);
+            chapters.forEach((chapter, i) => {
+                container.appendChild(buildChapterElement(chapter, i + 1));
 
                 db.collection('cards')
                     .where('chapterId', '==', chapter.id)
@@ -475,23 +475,8 @@ function renderLettersFromData(chapters, cards) {
     }
 
     container.innerHTML = '';
-    chapters.forEach(chapter => {
-        const chapterEl = document.createElement('div');
-        chapterEl.className = 'chapter-block';
-        chapterEl.id = 'chapter-' + chapter.id;
-        chapterEl.innerHTML = `
-            <div class="chapter-header">
-                <div class="chapter-title-row">
-                    <span class="chapter-icon">📖</span>
-                    <h3 class="chapter-title">${escapeHtml(chapter.title)}</h3>
-                </div>
-                ${chapter.description
-                    ? `<p class="chapter-description">${escapeHtml(chapter.description)}</p>`
-                    : ''}
-            </div>
-            <div class="cards-grid chapter-cards" id="cards-${chapter.id}"></div>
-        `;
-        container.appendChild(chapterEl);
+    chapters.forEach((chapter, i) => {
+        container.appendChild(buildChapterElement(chapter, i + 1));
 
         const cardsInChapter = cards
             .filter(c => c.chapterId === chapter.id)
@@ -501,51 +486,202 @@ function renderLettersFromData(chapters, cards) {
     });
 }
 
-function renderChapterCards(grid, cards, chapterId) {
-    if (cards.length === 0) {
-        grid.innerHTML = '<div class="empty-state small">No letters in this chapter yet.</div>';
-        return;
-    }
-
-    grid.innerHTML = cards.map((card, index) => `
-        <div class="card" onclick="toggleCard('${chapterId}-${index}')" style="animation-delay:${index * 0.1}s">
-            <div class="card-header">
-                <div class="card-title">${escapeHtml(card.title)}</div>
-                <div class="card-date">${escapeHtml(card.dateLabel || '')}</div>
-            </div>
-            <div class="card-content" id="card-content-${chapterId}-${index}">
-                <div class="card-message">${escapeHtml(card.message)}</div>
-            </div>
-            <div class="card-toggle-icon">▼</div>
-        </div>
-    `).join('');
+function chapterEyebrow(number) {
+    return 'Chapter ' + String(number).padStart(2, '0');
 }
 
-function toggleCard(cardId) {
-    const cardContent = document.getElementById('card-content-' + cardId);
-    if (!cardContent) return;
-    const card = cardContent.closest('.card');
-    const icon = card.querySelector('.card-toggle-icon');
+function buildChapterElement(chapter, number) {
+    chapterMeta[chapter.id] = { title: chapter.title, number };
 
-    document.querySelectorAll('.card.expanded').forEach(other => {
-        if (other !== card) {
-            other.classList.remove('expanded');
-            const otherContent = other.querySelector('.card-content');
-            const otherIcon    = other.querySelector('.card-toggle-icon');
-            if (otherContent) otherContent.style.maxHeight = '0';
-            if (otherIcon)    otherIcon.style.transform    = 'rotate(0deg)';
+    const gridId = 'cards-' + chapter.id;
+    const el = document.createElement('section');
+    el.className = 'chapter-block';
+    el.id = 'chapter-' + chapter.id;
+    el.innerHTML = `
+        <h3 class="chapter-heading">
+            <button type="button" class="chapter-toggle" aria-expanded="true" aria-controls="${escapeAttr(gridId)}">
+                <span class="chapter-heading-text">
+                    <span class="chapter-eyebrow">${chapterEyebrow(number)}</span>
+                    <span class="chapter-title">${escapeHtml(chapter.title)}</span>
+                </span>
+                <span class="chapter-meta">
+                    <span class="chapter-count" id="count-${escapeAttr(chapter.id)}"></span>
+                    <span class="chapter-chevron" aria-hidden="true">▾</span>
+                </span>
+            </button>
+        </h3>
+        ${chapter.description
+            ? `<p class="chapter-description">${escapeHtml(chapter.description)}</p>`
+            : ''}
+        <div class="cards-grid chapter-cards" id="${escapeAttr(gridId)}">
+            <div class="skeleton skeleton-card"></div>
+        </div>
+    `;
+    return el;
+}
+
+function letterExcerpt(message) {
+    const flat = (message || '').replace(/\s+/g, ' ').trim();
+    return flat.length > 150 ? flat.slice(0, 150).trimEnd() + '…' : flat;
+}
+
+function renderChapterCards(grid, cards, chapterId) {
+    letterStore[chapterId] = cards;
+
+    const countEl = document.getElementById('count-' + chapterId);
+    if (countEl) countEl.textContent = cards.length === 1 ? '1 letter' : cards.length + ' letters';
+
+    // Live updates re-render the grid; only the first render should animate in.
+    const firstRender = !grid.dataset.rendered;
+    grid.dataset.rendered = '1';
+    grid.classList.toggle('no-anim', !firstRender);
+
+    if (cards.length === 0) {
+        grid.innerHTML = '<div class="empty-state small">No letters in this chapter yet.</div>';
+    } else {
+        grid.innerHTML = cards.map((card, index) => `
+            <button type="button" class="letter-card"
+                    data-chapter="${escapeAttr(chapterId)}" data-index="${index}"
+                    style="animation-delay:${index * 0.06}s">
+                ${card.dateLabel ? `<span class="letter-date">${escapeHtml(card.dateLabel)}</span>` : ''}
+                <span class="letter-title">${escapeHtml(card.title)}</span>
+                <span class="letter-excerpt">${escapeHtml(letterExcerpt(card.message))}</span>
+                <span class="letter-more">Read letter <span aria-hidden="true">→</span></span>
+            </button>
+        `).join('');
+    }
+
+    if (readerState && readerState.chapterId === chapterId) refreshReader();
+}
+
+function initLetters() {
+    document.getElementById('chaptersContainer').addEventListener('click', e => {
+        const toggle = e.target.closest('.chapter-toggle');
+        if (toggle) {
+            const block     = toggle.closest('.chapter-block');
+            const collapsed = block.classList.toggle('collapsed');
+            toggle.setAttribute('aria-expanded', String(!collapsed));
+            return;
         }
+
+        const card = e.target.closest('.letter-card');
+        if (card) openLetter(card.dataset.chapter, Number(card.dataset.index));
     });
 
-    const isExpanded = card.classList.contains('expanded');
-    if (isExpanded) {
-        card.classList.remove('expanded');
-        cardContent.style.maxHeight = '0';
-        icon.style.transform = 'rotate(0deg)';
-    } else {
-        card.classList.add('expanded');
-        cardContent.style.maxHeight = cardContent.scrollHeight + 'px';
-        icon.style.transform = 'rotate(180deg)';
+    document.addEventListener('keydown', e => {
+        const reader = document.getElementById('reader');
+        if (!reader.classList.contains('active')) return;
+        if (e.key === 'Escape')     closeReader();
+        if (e.key === 'ArrowLeft')  readerStep(-1);
+        if (e.key === 'ArrowRight') readerStep(1);
+        trapFocus(reader, e);
+    });
+}
+
+// ---- Letter reader ---------------------------------------------------
+
+function openLetter(chapterId, index) {
+    const cards = letterStore[chapterId];
+    if (!cards || !cards[index]) return;
+
+    readerState = { chapterId, index };
+    paintReader();
+
+    const reader = document.getElementById('reader');
+    reader.classList.add('active');
+    reader.setAttribute('aria-hidden', 'false');
+    lockScroll();
+    document.getElementById('readerClose').focus();
+}
+
+function paintReader(keepScroll) {
+    const { chapterId, index } = readerState;
+    const cards = letterStore[chapterId];
+    const card  = cards[index];
+    const meta  = chapterMeta[chapterId];
+
+    document.getElementById('readerEyebrow').textContent =
+        meta ? chapterEyebrow(meta.number) + ' · ' + meta.title : '';
+    document.getElementById('readerTitle').textContent = card.title || '';
+    document.getElementById('readerBody').textContent  = card.message || '';
+
+    const sign = document.getElementById('readerSign');
+    sign.hidden = !card.dateLabel;
+    document.getElementById('readerDate').textContent = card.dateLabel || '';
+
+    document.getElementById('readerCount').textContent = (index + 1) + ' of ' + cards.length;
+    document.getElementById('readerPrev').disabled = index === 0;
+    document.getElementById('readerNext').disabled = index === cards.length - 1;
+
+    if (!keepScroll) document.getElementById('readerPaper').scrollTop = 0;
+}
+
+// A live Firestore update re-rendered the chapter the reader is showing.
+function refreshReader() {
+    const cards = letterStore[readerState.chapterId] || [];
+    if (cards.length === 0) {
+        closeReader();
+        return;
+    }
+    readerState.index = Math.min(readerState.index, cards.length - 1);
+    paintReader(true);
+}
+
+function readerStep(delta) {
+    if (!readerState) return;
+    const cards = letterStore[readerState.chapterId] || [];
+    const next  = readerState.index + delta;
+    if (next < 0 || next >= cards.length) return;
+    readerState.index = next;
+    paintReader();
+}
+
+function closeReader() {
+    const reader = document.getElementById('reader');
+    if (!reader.classList.contains('active')) return;
+
+    reader.classList.remove('active');
+    reader.setAttribute('aria-hidden', 'true');
+    unlockScroll();
+
+    // Hand focus back to the letter she opened, if it is still on the page.
+    if (readerState) {
+        const opener = document.querySelector(
+            '.letter-card[data-chapter="' + CSS.escape(readerState.chapterId) + '"]' +
+            '[data-index="' + readerState.index + '"]');
+        if (opener) opener.focus();
+    }
+    readerState = null;
+}
+
+// ---- Shared dialog helpers ------------------------------------------
+
+let scrollLocks = 0;
+
+function lockScroll() {
+    if (scrollLocks++ === 0) document.body.style.overflow = 'hidden';
+}
+
+function unlockScroll() {
+    scrollLocks = Math.max(0, scrollLocks - 1);
+    if (scrollLocks === 0) document.body.style.overflow = '';
+}
+
+// Keep Tab inside an open dialog.
+function trapFocus(container, e) {
+    if (e.key !== 'Tab') return;
+    const focusable = [...container.querySelectorAll('button:not([disabled]), a[href], input, [tabindex]:not([tabindex="-1"])')]
+        .filter(el => el.getClientRects().length > 0);
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
     }
 }
 
@@ -734,6 +870,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initAnniversaryCounter();
     initThemeToggle();
     initDrawerCollapse();
+    initLetters();
 
     window.addEventListener('hashchange', routeFromHash);
     routeFromHash();

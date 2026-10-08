@@ -113,3 +113,19 @@ body.dark-mode { color-scheme: dark; }
     40% { transform: translateY(-8px); }
     60% { transform: translateY(-4px); }
 }
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Shared loading placeholder */
+.skeleton {
+    background: linear-gradient(90deg,
+        var(--surface-sunken) 25%,
+        var(--border) 50%,
+        var(--surface-sunken) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-md);
+}
