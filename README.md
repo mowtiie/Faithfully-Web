@@ -26,11 +26,12 @@ What began as a single static page turned into a full system: chapters of letter
 - 🎂 Live countdown to her birthday (down to the second)
 - 💛 Days-together counter that ticks up from the day we began
 - 🌻 Floating sunflower background that drifts gently across the screen
-- 🌙 Light and dark mode with a hand-tuned sunflower palette
+- 🌙 Light and dark mode with a hand-tuned sunflower palette that follows your system setting
 
 ### 💌 Letters
 - 📖 Chapters that organize letters into eras of our story
-- 💌 Cards that expand on tap to reveal the full message
+- 💌 Letter cards that open into a full reading view, with previous/next navigation within the chapter
+- 📚 Collapsible chapters with letter counts
 - 🩵 Subtle hand-lettered headings using *Mrs Saint Delafield* and *Playfair Display*
 
 ### 📱 Apps
@@ -39,8 +40,8 @@ What began as a single static page turned into a full system: chapters of letter
 - ⚙️ Fully modular — new apps are just an entry in a config array
 
 ### 🐱 Gallery
-- 🖼 Grid of cat photos with shimmer loading skeletons
-- 🔍 Lightbox viewer with prev/next navigation (click, swipe, or arrow keys)
+- 🖼 Masonry grid of cat photos with shimmer loading skeletons
+- 🔍 Lightbox viewer with prev/next navigation (click, swipe, or arrow keys), a photo counter, and neighbour preloading
 - 📸 Optimized images — small thumbnails for the grid, full-res in the lightbox
 - ↗️ Captions that fade in on hover, always visible on touch devices
 
