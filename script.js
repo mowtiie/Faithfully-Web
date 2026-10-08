@@ -337,7 +337,7 @@ const APPS = [
         icon:        "🩷",
         iconImage:   "./icons/faithful.png",
         version:     "v1.0",
-        downloadUrl: "./faithful.apk",
+        downloadUrl: "./apps/Faithful.apk",
         sourceUrl:   "https://github.com/mowtiie/Faithful"
     },
     {
@@ -347,7 +347,7 @@ const APPS = [
         icon:        "🌻",
         iconImage:   "./icons/faithfully.png",
         version:     "v1.0",
-        downloadUrl: "./faithfully.apk",
+        downloadUrl: "./apps/Faithfully.apk",
         sourceUrl:   "https://github.com/mowtiie/Faithfully-App"
     }
 ];
