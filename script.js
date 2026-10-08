@@ -66,24 +66,73 @@ const MOCK_GALLERY = [
       thumbnailUrl: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=400' }
 ];
 
+let loginOpener = null;
+
 function openLogin(e) {
     if (e) e.preventDefault();
+    const overlay = document.getElementById('loginOverlay');
+    if (overlay.classList.contains('active')) return;
+
+    loginOpener = document.activeElement;
     document.getElementById('loginError').textContent = '';
     document.getElementById('loginPassword').value    = '';
-    document.getElementById('loginOverlay').classList.add('active');
+    setPasswordVisible(false);
+
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+    lockScroll();
     setTimeout(() => document.getElementById('loginEmail').focus(), 100);
 }
 
 function closeLogin() {
-    document.getElementById('loginOverlay').classList.remove('active');
+    const overlay = document.getElementById('loginOverlay');
+    if (!overlay.classList.contains('active')) return;
+
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    unlockScroll();
+
+    if (loginOpener && document.contains(loginOpener)) loginOpener.focus();
+    loginOpener = null;
+}
+
+function setPasswordVisible(visible) {
+    document.getElementById('loginPassword').type = visible ? 'text' : 'password';
+    const reveal = document.getElementById('loginReveal');
+    reveal.textContent = visible ? 'Hide' : 'Show';
+    reveal.setAttribute('aria-pressed', String(visible));
+}
+
+function togglePasswordVisibility() {
+    setPasswordVisible(document.getElementById('loginPassword').type === 'password');
 }
 
 function handleAuthBtnClick() {
-    if (authMode === 'authed') {
-        if (confirm('Sign out?')) auth.signOut();
-    } else {
-        openLogin();
-    }
+    if (authMode === 'authed') openSignOutDialog();
+    else                       openLogin();
+}
+
+function openSignOutDialog() {
+    const dialog = document.getElementById('signOutDialog');
+    dialog.classList.add('active');
+    dialog.setAttribute('aria-hidden', 'false');
+    lockScroll();
+    document.getElementById('signOutCancel').focus();
+}
+
+function closeSignOutDialog() {
+    const dialog = document.getElementById('signOutDialog');
+    if (!dialog.classList.contains('active')) return;
+
+    dialog.classList.remove('active');
+    dialog.setAttribute('aria-hidden', 'true');
+    unlockScroll();
+    document.getElementById('authBtn').focus();
+}
+
+function confirmSignOut() {
+    closeSignOutDialog();
+    auth.signOut();
 }
 
 async function submitLogin(e) {
@@ -117,9 +166,15 @@ async function submitLogin(e) {
 }
 
 document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        const overlay = document.getElementById('loginOverlay');
-        if (overlay && overlay.classList.contains('active')) closeLogin();
+    const dialogs = [
+        [document.getElementById('signOutDialog'), closeSignOutDialog],
+        [document.getElementById('loginOverlay'),  closeLogin]
+    ];
+    for (const [el, close] of dialogs) {
+        if (!el.classList.contains('active')) continue;
+        if (e.key === 'Escape') close();
+        trapFocus(el, e);
+        return;
     }
 });
 

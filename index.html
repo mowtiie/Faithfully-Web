@@ -48,13 +48,12 @@
         </button>
     </div>
 
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-bg-hearts" id="loginBgHearts"></div>
-        <button class="login-close" onclick="closeLogin()" aria-label="Close">✕</button>
+    <div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle" aria-hidden="true">
+        <button class="login-close" type="button" onclick="closeLogin()" aria-label="Close sign in">✕</button>
         <div class="login-card">
             <div class="login-brand">
-                <div class="login-logo">🌻</div>
-                <h1 class="login-title">Welcome</h1>
+                <div class="login-logo" aria-hidden="true">🌻</div>
+                <h1 class="login-title" id="loginTitle">Welcome</h1>
                 <p class="login-subtitle">Sign in to read your letters</p>
             </div>
 
@@ -63,9 +62,12 @@
                 <input class="login-input" id="loginEmail" type="email" autocomplete="email" required>
 
                 <label class="login-label" for="loginPassword">Password</label>
-                <input class="login-input" id="loginPassword" type="password" autocomplete="current-password" required>
+                <div class="login-field">
+                    <input class="login-input" id="loginPassword" type="password" autocomplete="current-password" required>
+                    <button class="login-reveal" id="loginReveal" type="button" aria-pressed="false" onclick="togglePasswordVisibility()">Show</button>
+                </div>
 
-                <div class="login-error" id="loginError"></div>
+                <div class="login-error" id="loginError" role="alert"></div>
 
                 <button class="login-submit" type="submit" id="loginSubmit">
                     <span id="loginSubmitText">Sign In</span>
@@ -73,6 +75,19 @@
 
                 <p class="login-hint">Only she has an account here. If you don't have one, you're welcome to keep exploring in demo mode. 🌻</p>
             </form>
+        </div>
+    </div>
+
+    <div class="dialog" id="signOutDialog" role="alertdialog" aria-modal="true" aria-labelledby="signOutTitle" aria-describedby="signOutText" aria-hidden="true">
+        <div class="dialog-backdrop" onclick="closeSignOutDialog()"></div>
+        <div class="dialog-card">
+            <div class="dialog-icon" aria-hidden="true">🌻</div>
+            <h2 class="dialog-title" id="signOutTitle">Sign out?</h2>
+            <p class="dialog-text" id="signOutText">You'll go back to the demo version of the site until you sign in again.</p>
+            <div class="dialog-actions">
+                <button class="dialog-btn dialog-btn-secondary" id="signOutCancel" type="button" onclick="closeSignOutDialog()">Stay</button>
+                <button class="dialog-btn dialog-btn-primary" type="button" onclick="confirmSignOut()">Sign out</button>
+            </div>
         </div>
     </div>
 
