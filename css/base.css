@@ -131,3 +131,20 @@ body.dark-mode { color-scheme: dark; }
     animation: shimmer 1.5s infinite;
     border-radius: var(--radius-md);
 }
+
+/* Keyboard focus — visible for keyboard users, quiet for mouse users */
+:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 2px;
+}
+
+/* Respect the system "reduce motion" setting */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .hearts-bg { display: none; }
+}
