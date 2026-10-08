@@ -651,16 +651,27 @@ function initThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon   = document.querySelector('.theme-icon');
 
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    document.body.classList.toggle('dark-mode', currentTheme === 'dark');
-    themeIcon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const saved      = localStorage.getItem('theme');
+
+    function applyTheme(isDark) {
+        document.body.classList.toggle('dark-mode', isDark);
+        themeIcon.textContent = isDark ? '☀️' : '🌙';
+        themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+
+    applyTheme(saved ? saved === 'dark' : systemDark.matches);
+
+    // Until she picks a theme herself, keep following the system setting.
+    systemDark.addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) applyTheme(e.matches);
+    });
 
     themeToggle.addEventListener('click', function () {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
+        const isDark = !document.body.classList.contains('dark-mode');
         themeIcon.style.transform = 'rotate(360deg) scale(0)';
         setTimeout(() => {
-            themeIcon.textContent     = isDark ? '☀️' : '🌙';
+            applyTheme(isDark);
             themeIcon.style.transform = 'rotate(0deg) scale(1)';
         }, 200);
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
