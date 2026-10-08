@@ -1,6 +1,7 @@
 /* ============================================================
    Dark palette — a warm "lamplight" override of the tokens
-   defined in base.css. New components inherit it automatically.
+   defined in base.css. Every component reads the tokens, so no
+   per-component dark overrides are needed.
    ============================================================ */
 body.dark-mode {
     --bg:             #1b1406;
