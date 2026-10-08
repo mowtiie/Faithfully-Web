@@ -1,62 +1,52 @@
+/* ============================================================
+   APPS — showcase cards
+   ============================================================ */
+
 .apps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 24px;
+    max-width: 960px;
+    margin: 0 auto;
     padding-bottom: 40px;
-    align-items: start;
-    animation: fadeIn 0.5s ease-out;
-}
-
-@media (max-width: 600px) {
-    .apps-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
+    align-items: stretch;
 }
 
 .app-card {
-    background: white;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid rgba(168, 213, 226, 0.4);
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.04),
-        0 6px 18px var(--shadow-blue);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.3s ease,
-                border-color 0.3s ease;
-    animation: cardAppear 0.5s ease-out backwards;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    animation: cardAppear 0.5s var(--ease-out) backwards;
+    transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
 }
 
 .app-card:hover {
     transform: translateY(-3px);
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.06),
-        0 12px 28px var(--shadow-blue);
-    border-color: var(--soft-blue);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
 }
 
-.app-card-header {
+.app-card-top {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 18px;
-    cursor: pointer;
-    user-select: none;
+    gap: 18px;
 }
 
 .app-icon {
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg,
-        var(--warm-beige),
-        var(--sand));
-    border-radius: 14px;
+    display: grid;
+    place-items: center;
     overflow: hidden;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: 18px;
 }
 
 .app-icon-img {
@@ -66,136 +56,99 @@
 }
 
 .app-icon-emoji {
-    font-size: 32px;
+    font-size: 36px;
     line-height: 1;
 }
 
 .app-info {
     flex: 1;
-    min-width: 0; 
+    min-width: 0;
 }
 
 .app-name-row {
     display: flex;
-    align-items: baseline;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 4px;
 }
 
 .app-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
+    font-family: var(--font-display);
+    font-size: 24px;
     font-weight: 700;
-    color: var(--navy-blue);
     line-height: 1.2;
+    color: var(--heading);
 }
 
 .app-version {
-    font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
-    color: var(--soft-blue);
-    background: rgba(44, 95, 126, 0.08);
-    border-radius: 8px;
-    padding: 2px 8px;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.4px;
+    color: var(--navy);
+    background: var(--navy-soft);
+    border-radius: var(--radius-pill);
+    padding: 3px 10px;
 }
 
 .app-tagline {
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--deep-navy);
-    opacity: 0.75;
-    line-height: 1.4;
-}
-
-.app-chevron {
     font-size: 14px;
-    color: var(--soft-blue);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex-shrink: 0;
-    margin-left: 4px;
-}
-
-.app-card-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.app-card.expanded .app-card-body {
-    /* max-height set inline by JS to scrollHeight for smooth open */
+    line-height: 1.5;
+    color: var(--text-muted);
 }
 
 .app-description {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    line-height: 1.7;
-    color: #4a4a4a;
-    padding: 0 18px 16px;
-    margin: 0;
+    flex: 1;
+    font-family: var(--font-display);
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
 }
 
 .app-actions {
     display: flex;
-    gap: 10px;
-    padding: 0 18px 18px;
     flex-wrap: wrap;
+    gap: 10px;
 }
 
 .app-btn {
     flex: 1;
-    min-width: 130px;
+    min-width: 140px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 11px 18px;
-    border-radius: 12px;
-    font-family: 'Inter', sans-serif;
+    padding: 12px 18px;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-pill);
     font-size: 14px;
     font-weight: 600;
+    letter-spacing: 0.2px;
     text-decoration: none;
-    letter-spacing: 0.3px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    border: 1.5px solid transparent;
+    transition: background 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
-.app-btn-icon {
-    font-size: 14px;
-    line-height: 1;
-}
+.app-btn:active { transform: scale(0.98); }
 
 .app-btn-primary {
-    background: linear-gradient(135deg, var(--navy-blue), var(--soft-blue));
-    color: white;
-    box-shadow: 0 3px 10px rgba(44, 95, 126, 0.3);
+    background: var(--accent);
+    color: var(--on-accent);
 }
 
-.app-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 16px rgba(44, 95, 126, 0.4);
-    background: linear-gradient(135deg, var(--soft-blue), var(--sky-blue));
-}
+.app-btn-primary:hover { background: var(--accent-hover); }
 
 .app-btn-secondary {
     background: transparent;
-    color: var(--navy-blue);
-    border-color: var(--navy-blue);
+    color: var(--navy);
+    border-color: var(--navy);
 }
 
-.app-btn-secondary:hover {
-    background: var(--warm-beige);
-    transform: translateY(-2px);
-}
+.app-btn-secondary:hover { background: var(--navy-soft); }
 
 @media (max-width: 480px) {
-    .app-card-header { padding: 14px; gap: 12px; }
-    .app-icon        { width: 48px; height: 48px; border-radius: 12px; }
-    .app-icon-emoji  { font-size: 26px; }
-    .app-name        { font-size: 18px; }
-    .app-tagline     { font-size: 12px; }
-    .app-description { padding: 0 14px 14px; }
-    .app-actions     { padding: 0 14px 14px; }
+    .app-card     { padding: 22px; gap: 16px; }
+    .app-icon     { width: 60px; height: 60px; border-radius: 16px; }
+    .app-icon-emoji { font-size: 30px; }
+    .app-name     { font-size: 21px; }
 }

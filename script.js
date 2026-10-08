@@ -362,50 +362,48 @@ function renderApps() {
     }
 
     grid.innerHTML = APPS.map((app, i) => {
+        const fallback = app.icon || '📱';
         const iconHtml = app.iconImage
-            ? `<img class="app-icon-img" src="${escapeAttr(app.iconImage)}" alt="${escapeAttr(app.name)} icon"
-                    onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'app-icon-emoji',textContent:${JSON.stringify(app.icon || '📱')}}))">`
-            : `<span class="app-icon-emoji">${escapeHtml(app.icon || '📱')}</span>`;
+            ? `<img class="app-icon-img" src="${escapeAttr(app.iconImage)}" alt=""
+                    data-fallback="${escapeAttr(fallback)}">`
+            : `<span class="app-icon-emoji">${escapeHtml(fallback)}</span>`;
 
         return `
-            <div class="app-card" id="app-card-${i}">
-                <div class="app-card-header" onclick="toggleApp(${i})">
+            <article class="app-card" style="animation-delay:${i * 0.08}s">
+                <div class="app-card-top">
                     <div class="app-icon">${iconHtml}</div>
                     <div class="app-info">
                         <div class="app-name-row">
-                            <span class="app-name">${escapeHtml(app.name)}</span>
+                            <h3 class="app-name">${escapeHtml(app.name)}</h3>
                             ${app.version ? `<span class="app-version">${escapeHtml(app.version)}</span>` : ''}
                         </div>
-                        <div class="app-tagline">${escapeHtml(app.tagline)}</div>
-                    </div>
-                    <div class="app-chevron" id="app-chevron-${i}">▼</div>
-                </div>
-                <div class="app-card-body" id="app-body-${i}">
-                    <p class="app-description">${escapeHtml(app.description)}</p>
-                    <div class="app-actions">
-                        <a href="${escapeAttr(app.downloadUrl)}" class="app-btn app-btn-primary" download>
-                            <span class="app-btn-icon">⬇️</span>
-                            <span>Download</span>
-                        </a>
-                        <a href="${escapeAttr(app.sourceUrl)}" class="app-btn app-btn-secondary" target="_blank" rel="noopener">
-                            <span class="app-btn-icon">🔗</span>
-                            <span>Source</span>
-                        </a>
+                        <p class="app-tagline">${escapeHtml(app.tagline)}</p>
                     </div>
                 </div>
-            </div>
+                <p class="app-description">${escapeHtml(app.description)}</p>
+                <div class="app-actions">
+                    <a href="${escapeAttr(app.downloadUrl)}" class="app-btn app-btn-primary" download>
+                        <span class="app-btn-icon" aria-hidden="true">⬇️</span>
+                        <span>Download</span>
+                    </a>
+                    <a href="${escapeAttr(app.sourceUrl)}" class="app-btn app-btn-secondary" target="_blank" rel="noopener">
+                        <span class="app-btn-icon" aria-hidden="true">🔗</span>
+                        <span>Source</span>
+                    </a>
+                </div>
+            </article>
         `;
     }).join('');
-}
 
-function toggleApp(i) {
-    const card    = document.getElementById('app-card-' + i);
-    const body    = document.getElementById('app-body-' + i);
-    const chevron = document.getElementById('app-chevron-' + i);
-
-    const isOpen = card.classList.toggle('expanded');
-    body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0';
-    chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+    // If an icon image fails to load, fall back to the app's emoji.
+    grid.querySelectorAll('img.app-icon-img').forEach(img => {
+        img.addEventListener('error', () => {
+            const emoji = document.createElement('span');
+            emoji.className   = 'app-icon-emoji';
+            emoji.textContent = img.dataset.fallback;
+            img.replaceWith(emoji);
+        }, { once: true });
+    });
 }
 
 const LETTERS_SKELETON = `
