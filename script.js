@@ -13,7 +13,8 @@ const auth = firebase.auth();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-let authMode = 'guest';
+let authMode  = 'guest';
+let authReady = false;
 const ALLOWED_UIDS = new Set([
     "h0yjVpgq6pbreAD3aZvQOcaOp4F3"
 ]);
@@ -123,6 +124,8 @@ document.addEventListener('keydown', e => {
 });
 
 auth.onAuthStateChanged(user => {
+    authReady = true;
+
     if (user && ALLOWED_UIDS.has(user.uid)) {
         authMode = 'authed';
         document.body.classList.remove('demo-mode');
@@ -163,7 +166,20 @@ auth.onAuthStateChanged(user => {
 
 const sectionLoaded = { home: true, letters: false, apps: false, gallery: false };
 
-function switchSection(name, btn) {
+const SECTION_NAMES = ['home', 'letters', 'apps', 'gallery'];
+
+// Navigation goes through the URL hash so refresh and the back button keep her place.
+function switchSection(name) {
+    if (location.hash === '#' + name) showSection(name);
+    else location.hash = name;
+}
+
+function routeFromHash() {
+    const name = location.hash.slice(1);
+    showSection(SECTION_NAMES.includes(name) ? name : 'home');
+}
+
+function showSection(name) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.section === name);
@@ -172,10 +188,15 @@ function switchSection(name, btn) {
     document.getElementById('section-' + name).classList.add('active');
     document.getElementById('heartsBackground').style.opacity = name === 'home' ? '1' : '0';
 
-    if (!sectionLoaded[name]) {
+    // Apps are static. Letters and gallery wait for the first auth result so a
+    // refresh on #letters never flashes sample content at a signed-in user;
+    // onAuthStateChanged loads whichever of them is active once it knows.
+    if (name === 'apps' && !sectionLoaded.apps) {
+        sectionLoaded.apps = true;
+        renderApps();
+    } else if (authReady && !sectionLoaded[name]) {
         sectionLoaded[name] = true;
         if (name === 'letters') loadLetters();
-        if (name === 'apps')    renderApps();
         if (name === 'gallery') loadGallery();
     }
 
@@ -710,4 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initAnniversaryCounter();
     initThemeToggle();
     initDrawerCollapse();
+
+    window.addEventListener('hashchange', routeFromHash);
+    routeFromHash();
 });
