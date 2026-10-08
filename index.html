@@ -38,13 +38,15 @@
         <span>👀 Demo mode — <a href="#" onclick="openLogin(event)">sign in</a> to see the real letters</span>
     </div>
 
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <span class="theme-icon">🌙</span>
-    </button>
+    <div class="top-controls">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <span class="theme-icon">🌙</span>
+        </button>
 
-    <button class="auth-btn" id="authBtn" onclick="handleAuthBtnClick()" aria-label="Sign in">
-        <span id="authBtnIcon">🔒</span>
-    </button>
+        <button class="auth-btn" id="authBtn" onclick="handleAuthBtnClick()" aria-label="Sign in">
+            <span id="authBtnIcon">🔒</span>
+        </button>
+    </div>
 
     <div class="login-overlay" id="loginOverlay">
         <div class="login-bg-hearts" id="loginBgHearts"></div>
@@ -82,19 +84,19 @@
                 <span class="drawer-name">Hers</span>
             </div>
             <nav class="drawer-nav">
-                <button class="nav-btn active" data-section="home" onclick="switchSection('home', this)">
+                <button class="nav-btn active" data-section="home" title="Home" onclick="switchSection('home', this)">
                     <span class="nav-icon">🏠</span>
                     <span class="nav-label">Home</span>
                 </button>
-                <button class="nav-btn" data-section="letters" onclick="switchSection('letters', this)">
+                <button class="nav-btn" data-section="letters" title="Letters" onclick="switchSection('letters', this)">
                     <span class="nav-icon">💌</span>
                     <span class="nav-label">Letters</span>
                 </button>
-                <button class="nav-btn" data-section="apps" onclick="switchSection('apps', this)">
+                <button class="nav-btn" data-section="apps" title="Apps" onclick="switchSection('apps', this)">
                     <span class="nav-icon">📱</span>
                     <span class="nav-label">Apps</span>
                 </button>
-                <button class="nav-btn" data-section="gallery" onclick="switchSection('gallery', this)">
+                <button class="nav-btn" data-section="gallery" title="Gallery" onclick="switchSection('gallery', this)">
                     <span class="nav-icon">🐱</span>
                     <span class="nav-label">Gallery</span>
                 </button>

@@ -182,7 +182,10 @@ function routeFromHash() {
 function showSection(name) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.section === name);
+        const isActive = b.dataset.section === name;
+        b.classList.toggle('active', isActive);
+        if (isActive) b.setAttribute('aria-current', 'page');
+        else          b.removeAttribute('aria-current');
     });
 
     document.getElementById('section-' + name).classList.add('active');
