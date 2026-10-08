@@ -5,6 +5,8 @@
 }
 
 :root {
+    /* Legacy palette — superseded by the semantic tokens below.
+       Removed once every stylesheet has migrated. */
     --navy-blue:    #8a6d1a;
     --soft-blue:    #d4a82c;
     --sky-blue:     #f5d97a;
@@ -14,18 +16,77 @@
     --deep-navy:    #5a4515;
     --accent-gold:  #f2b705;
     --shadow-blue:  rgba(138, 109, 26, 0.15);
+
+    /* Surfaces */
+    --bg:             #fffaf0;
+    --bg-deep:        #f6e9c6;
+    --glow:           rgba(242, 183, 5, 0.22);
+    --surface:        #fffdf7;
+    --surface-raised: #ffffff;
+    --surface-sunken: #fbf0d4;
+    --overlay:        rgba(32, 22, 4, 0.55);
+
+    /* Lines */
+    --border:         rgba(138, 109, 26, 0.18);
+    --border-strong:  rgba(138, 109, 26, 0.38);
+
+    /* Text */
+    --text:           #3b2f0f;
+    --text-muted:     #7a6630;
+    --heading:        #5a4515;
+    --hand:           #8a6d1a;
+
+    /* Accents */
+    --accent:         #f2b705;
+    --accent-hover:   #d9a304;
+    --accent-soft:    rgba(242, 183, 5, 0.16);
+    --on-accent:      #3b2a03;
+    --navy:           #2f4a6b;
+    --navy-soft:      rgba(47, 74, 107, 0.1);
+    --danger:         #b3392b;
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px rgba(90, 69, 21, 0.08), 0 2px 8px rgba(90, 69, 21, 0.06);
+    --shadow-md: 0 2px 4px rgba(90, 69, 21, 0.06), 0 10px 28px rgba(90, 69, 21, 0.10);
+    --shadow-lg: 0 4px 8px rgba(90, 69, 21, 0.08), 0 24px 60px rgba(90, 69, 21, 0.18);
+
+    /* Shape */
+    --radius-sm:   10px;
+    --radius-md:   16px;
+    --radius-lg:   24px;
+    --radius-pill: 999px;
+
+    /* Type */
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-hand:    'Mrs Saint Delafield', cursive;
+    --font-body:    'Inter', system-ui, sans-serif;
+
+    /* Motion */
+    --ease:     cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Layout */
+    --drawer-w:           232px;
+    --drawer-w-collapsed: 76px;
+    --banner-h:           0px;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg,
-        var(--cream-beige) 0%,
-        var(--warm-beige) 50%,
-        var(--sand) 100%);
+    font-family: var(--font-body);
+    color: var(--text);
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse 80% 55% at 50% -12%, var(--glow), transparent 70%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
 }
+
+body.dark-mode { color-scheme: dark; }
 
 @keyframes fadeIn {
     from { opacity: 0; }

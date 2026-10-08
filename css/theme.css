@@ -1,7 +1,3 @@
-body.dark-mode {
-    background: linear-gradient(135deg, #2a1f0a 0%, #3d2e15 50%, #4a3820 100%);
-}
-
 body.dark-mode h1 {
     color: var(--sky-blue);
     text-shadow: 2px 2px 8px rgba(168, 213, 226, 0.3);
@@ -178,4 +174,38 @@ body.dark-mode .app-btn-secondary {
 
 body.dark-mode .app-btn-secondary:hover {
     background: rgba(168, 213, 226, 0.1);
+}
+
+/* ============================================================
+   Dark palette — a warm "lamplight" override of the tokens
+   defined in base.css. New components inherit it automatically.
+   ============================================================ */
+body.dark-mode {
+    --bg:             #1b1406;
+    --bg-deep:        #120d03;
+    --glow:           rgba(242, 183, 5, 0.13);
+    --surface:        #261c0b;
+    --surface-raised: #2f2310;
+    --surface-sunken: #1f1608;
+    --overlay:        rgba(8, 5, 0, 0.7);
+
+    --border:         rgba(245, 217, 122, 0.14);
+    --border-strong:  rgba(245, 217, 122, 0.34);
+
+    --text:           #f1e6c8;
+    --text-muted:     #c4b283;
+    --heading:        #f5d97a;
+    --hand:           #f5d97a;
+
+    --accent:         #f2b705;
+    --accent-hover:   #ffd24a;
+    --accent-soft:    rgba(242, 183, 5, 0.14);
+    --on-accent:      #2a1d03;
+    --navy:           #a9c1e3;
+    --navy-soft:      rgba(169, 193, 227, 0.12);
+    --danger:         #ff8a7a;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.4), 0 24px 60px rgba(0, 0, 0, 0.55);
 }
