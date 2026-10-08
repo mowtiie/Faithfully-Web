@@ -1,12 +1,3 @@
-body.dark-mode .gallery-loading,
-body.dark-mode .gallery-empty {
-    color: var(--sky-blue);
-}
-
-body.dark-mode .gallery-item {
-    background: rgba(255, 255, 255, 0.06);
-}
-
 /* ============================================================
    Dark palette — a warm "lamplight" override of the tokens
    defined in base.css. New components inherit it automatically.

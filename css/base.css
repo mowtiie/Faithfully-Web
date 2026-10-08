@@ -25,6 +25,8 @@
     --surface-raised: #ffffff;
     --surface-sunken: #fbf0d4;
     --overlay:        rgba(32, 22, 4, 0.55);
+    --scrim-strong:   rgba(20, 14, 4, 0.94);   /* lightbox + photo captions: dark in both themes */
+    --on-scrim:       #fdf6e3;
 
     /* Lines */
     --border:         rgba(138, 109, 26, 0.18);

@@ -218,13 +218,14 @@
         </article>
     </div>
 
-    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-        <button class="lightbox-prev" onclick="event.stopPropagation(); lightboxPrev()" aria-label="Previous">‹</button>
-        <button class="lightbox-next" onclick="event.stopPropagation(); lightboxNext()" aria-label="Next">›</button>
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true" onclick="closeLightbox()">
+        <button class="lightbox-close" type="button" onclick="closeLightbox()" aria-label="Close photo viewer">✕</button>
+        <button class="lightbox-prev" type="button" onclick="event.stopPropagation(); lightboxPrev()" aria-label="Previous photo">‹</button>
+        <button class="lightbox-next" type="button" onclick="event.stopPropagation(); lightboxNext()" aria-label="Next photo">›</button>
         <div class="lightbox-content" onclick="event.stopPropagation()">
             <img class="lightbox-img" id="lightboxImg" src="" alt="">
             <p class="lightbox-caption" id="lightboxCaption"></p>
+            <p class="lightbox-count" id="lightboxCount" aria-live="polite"></p>
         </div>
     </div>
 

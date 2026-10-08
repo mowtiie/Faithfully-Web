@@ -729,12 +729,6 @@ function loadGallery() {
     galleryUnsub = db.collection('gallery')
         .orderBy('order', 'asc')
         .onSnapshot(snapshot => {
-            if (snapshot.empty) {
-                grid.innerHTML = '<div class="gallery-empty">No photos yet. 🐱</div>';
-                galleryPhotos = [];
-                return;
-            }
-
             const photos = [];
             snapshot.forEach(doc => photos.push({ id: doc.id, ...doc.data() }));
             renderGalleryFromData(photos);
@@ -748,59 +742,117 @@ function renderGalleryFromData(photos) {
     const grid = document.getElementById('galleryGrid');
     galleryPhotos = photos || [];
 
+    syncLightbox();
+
     if (galleryPhotos.length === 0) {
         grid.innerHTML = '<div class="gallery-empty">No photos yet. 🐱</div>';
         return;
     }
 
     grid.innerHTML = galleryPhotos.map((photo, i) => `
-        <div class="gallery-item" style="animation-delay:${i * 0.04}s"
-             onclick="openLightbox(${i})">
-            <div class="gallery-skeleton"></div>
+        <button type="button" class="gallery-item" data-index="${i}"
+                style="animation-delay:${Math.min(i, 12) * 0.04}s"
+                aria-label="${escapeAttr(photo.caption || 'Open photo ' + (i + 1))}">
+            <div class="gallery-skeleton skeleton"></div>
             <img
                 src="${escapeAttr(photo.thumbnailUrl || photo.imageUrl)}"
-                alt="${escapeAttr(photo.caption || 'Cat photo')}"
+                alt=""
                 loading="lazy"
                 onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';"
                 onerror="this.closest('.gallery-item').classList.add('img-error');"
             >
-            ${photo.caption ? `<div class="gallery-caption">${escapeHtml(photo.caption)}</div>` : ''}
-        </div>
+            ${photo.caption ? `<span class="gallery-caption">${escapeHtml(photo.caption)}</span>` : ''}
+        </button>
     `).join('');
+}
+
+function initGallery() {
+    document.getElementById('galleryGrid').addEventListener('click', e => {
+        const item = e.target.closest('.gallery-item');
+        if (item) openLightbox(Number(item.dataset.index));
+    });
+
+    const lightbox = document.getElementById('lightbox');
+
+    document.addEventListener('keydown', e => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape')     closeLightbox();
+        if (e.key === 'ArrowLeft')  lightboxPrev();
+        if (e.key === 'ArrowRight') lightboxNext();
+        trapFocus(lightbox, e);
+    });
+
+    // Swipe left/right to move between photos.
+    let touchStart = null;
+    lightbox.addEventListener('touchstart', e => {
+        const t = e.changedTouches[0];
+        touchStart = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', e => {
+        if (!touchStart) return;
+        const t  = e.changedTouches[0];
+        const dx = t.clientX - touchStart.x;
+        const dy = t.clientY - touchStart.y;
+        touchStart = null;
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        if (dx < 0) lightboxNext();
+        else        lightboxPrev();
+    }, { passive: true });
 }
 
 function openLightbox(index) {
     if (!galleryPhotos || galleryPhotos.length === 0) return;
     lightboxIndex = index;
     renderLightbox();
+
     const lightbox = document.getElementById('lightbox');
     lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    lightbox.setAttribute('aria-hidden', 'false');
+    lockScroll();
+    lightbox.querySelector('.lightbox-close').focus();
 }
 
 function renderLightbox() {
     const photo = galleryPhotos[lightboxIndex];
     if (!photo) return;
-    const img      = document.getElementById('lightboxImg');
-    const caption  = document.getElementById('lightboxCaption');
+    const img     = document.getElementById('lightboxImg');
+    const caption = document.getElementById('lightboxCaption');
 
+    img.classList.add('is-loading');
+    img.onload  = () => img.classList.remove('is-loading');
+    img.onerror = () => img.classList.remove('is-loading');
     img.src = photo.imageUrl;
     img.alt = photo.caption || 'Cat photo';
 
-    if (photo.caption) {
-        caption.textContent = photo.caption;
-        caption.style.display = 'block';
-    } else {
-        caption.style.display = 'none';
-    }
+    caption.textContent   = photo.caption || '';
+    caption.style.display = photo.caption ? 'block' : 'none';
 
-    const prev = document.querySelector('.lightbox-prev');
-    const next = document.querySelector('.lightbox-next');
-    if (prev && next) {
-        const onlyOne = galleryPhotos.length <= 1;
-        prev.style.display = onlyOne ? 'none' : 'flex';
-        next.style.display = onlyOne ? 'none' : 'flex';
+    document.getElementById('lightboxCount').textContent =
+        (lightboxIndex + 1) + ' / ' + galleryPhotos.length;
+
+    const onlyOne = galleryPhotos.length <= 1;
+    document.querySelector('.lightbox-prev').style.display = onlyOne ? 'none' : 'flex';
+    document.querySelector('.lightbox-next').style.display = onlyOne ? 'none' : 'flex';
+
+    // Warm the cache for the photos either side so stepping feels instant.
+    [-1, 1].forEach(step => {
+        const neighbour = galleryPhotos[(lightboxIndex + step + galleryPhotos.length) % galleryPhotos.length];
+        if (neighbour && neighbour.imageUrl) new Image().src = neighbour.imageUrl;
+    });
+}
+
+// A live update changed the photo list while the lightbox may be open.
+function syncLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    if (!lightbox.classList.contains('active')) return;
+
+    if (galleryPhotos.length === 0) {
+        closeLightbox();
+        return;
     }
+    lightboxIndex = Math.min(lightboxIndex, galleryPhotos.length - 1);
+    renderLightbox();
 }
 
 function lightboxPrev() {
@@ -814,17 +866,16 @@ function lightboxNext() {
 }
 
 function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-document.addEventListener('keydown', e => {
     const lightbox = document.getElementById('lightbox');
-    if (!lightbox || !lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape')     closeLightbox();
-    if (e.key === 'ArrowLeft')  lightboxPrev();
-    if (e.key === 'ArrowRight') lightboxNext();
-});
+    if (!lightbox.classList.contains('active')) return;
+
+    lightbox.classList.remove('active');
+    lightbox.setAttribute('aria-hidden', 'true');
+    unlockScroll();
+
+    const opener = document.querySelector('.gallery-item[data-index="' + lightboxIndex + '"]');
+    if (opener) opener.focus();
+}
 
 function escapeAttr(text) {
     if (!text) return '';
@@ -899,6 +950,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initThemeToggle();
     initDrawerCollapse();
     initLetters();
+    initGallery();
 
     window.addEventListener('hashchange', routeFromHash);
     routeFromHash();
