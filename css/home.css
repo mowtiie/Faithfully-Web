@@ -1,29 +1,48 @@
-header {
+/* ============================================================
+   HOME — hero, days-together card, birthday countdown
+   ============================================================ */
+
+.home-hero {
     text-align: center;
-    padding: 80px 20px 60px;
+    padding: 84px 20px 36px;
     position: relative;
     z-index: 1;
-    animation: fadeInDown 1s ease-out;
 }
 
-h1 {
-    font-family: 'Mrs Saint Delafield', cursive;
-    font-size: clamp(56px, 9vw, 108px);
-    color: var(--navy-blue);
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px var(--shadow-blue);
-    letter-spacing: 2px;
+.home-hero > * {
+    animation: sectionIn 0.9s var(--ease-out) backwards;
+}
+.home-hero > :nth-child(2) { animation-delay: 0.08s; }
+.home-hero > :nth-child(3) { animation-delay: 0.16s; }
+
+.hero-sun {
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.home-hero h1 {
+    font-family: var(--font-hand);
+    font-size: clamp(60px, 11vw, 120px);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--hand);
+    text-shadow: 0 2px 28px var(--accent-soft);
+    margin-bottom: 18px;
 }
 
 .subtitle {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(18px, 2.5vw, 26px);
-    color: var(--deep-navy);
-    font-weight: 400;
+    max-width: 46ch;
+    margin: 0 auto;
+    font-family: var(--font-display);
+    font-size: clamp(17px, 2.2vw, 22px);
     font-style: italic;
-    letter-spacing: 1px;
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--text-muted);
 }
 
+/* --- Drifting flowers ---------------------------------------- */
 .hearts-bg {
     position: fixed;
     top: 0; left: 0;
@@ -32,6 +51,7 @@ h1 {
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
+    transition: opacity 0.4s var(--ease);
 }
 
 .heart-float {
@@ -48,130 +68,137 @@ h1 {
     100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
 }
 
+/* --- Stat cards ---------------------------------------------- */
+.home-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+@media (min-width: 900px) {
+    .home-stats {
+        grid-template-columns: 1fr 1.2fr;
+        align-items: stretch;
+    }
+}
+
+.anniversary-wrapper,
 .countdown-wrapper {
-    text-align: center;
-    margin: 20px auto 0;
-    padding: 40px 32px;
-    max-width: 640px;
-    background: white;
-    border-radius: 28px;
-    box-shadow: 0 8px 32px var(--shadow-blue);
-    border: 1px solid rgba(168, 213, 226, 0.3);
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 36px 24px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
-.countdown-wrapper::before {
+.anniversary-wrapper > *,
+.countdown-wrapper > * {
+    position: relative;
+}
+
+/* Days together — the hero stat */
+.anniversary-wrapper::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--navy-blue), var(--soft-blue), var(--sky-blue));
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--accent-soft), transparent 68%);
+    pointer-events: none;
 }
 
+.anniversary-label,
 .countdown-label {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(17px, 2.5vw, 22px);
-    color: var(--deep-navy);
+    font-family: var(--font-display);
+    font-size: clamp(16px, 2vw, 19px);
     font-style: italic;
-    margin-bottom: 28px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
 }
+
+.anniversary-number {
+    font-family: var(--font-hand);
+    font-size: clamp(96px, 15vw, 150px);
+    line-height: 1.25;
+    padding-top: 18px;
+    color: var(--hand);
+    text-shadow: 0 2px 30px var(--accent-soft);
+}
+
+.anniversary-unit {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--text-muted);
+}
+
+/* Birthday countdown — quieter, secondary */
+.countdown-label { margin-bottom: 22px; }
 
 .countdown-blocks {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
 }
 
 .countdown-block {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(135deg, var(--navy-blue), var(--soft-blue));
-    border-radius: 16px;
-    padding: 16px 20px;
-    min-width: 80px;
+    padding: 16px 4px 12px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
 }
 
 .countdown-num {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 5vw, 48px);
+    font-family: var(--font-display);
+    font-size: clamp(26px, 5.5vw, 42px);
     font-weight: 700;
-    color: white;
     line-height: 1;
+    color: var(--heading);
+    font-variant-numeric: tabular-nums;
 }
 
 .countdown-unit {
-    font-family: 'Inter', sans-serif;
+    margin-top: 6px;
     font-size: 11px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 4px;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
 }
 
 .countdown-sep {
-    font-size: 32px;
+    flex: 0 0 auto;
+    font-size: 22px;
     font-weight: 700;
-    color: var(--soft-blue);
-    margin-bottom: 16px;
     line-height: 1;
+    margin-bottom: 18px;
+    color: var(--border-strong);
 }
 
 .countdown-birthday {
-    font-family: 'Mrs Saint Delafield', cursive;
-    font-size: clamp(36px, 6vw, 56px);
-    color: var(--navy-blue);
+    font-family: var(--font-hand);
+    font-size: clamp(40px, 7vw, 60px);
+    line-height: 1.1;
+    color: var(--hand);
     animation: pulse 2s ease-in-out infinite;
 }
 
-@media (max-width: 768px) {
-    header { padding: 60px 20px 40px; }
-}
-
-@media (max-width: 480px) {
-    .countdown-block { min-width: 64px; padding: 12px 14px; }
-    .countdown-sep   { font-size: 22px; }
-}
-
-.anniversary-wrapper {
-    text-align: center;
-    margin: 24px auto 0;
-    padding: 32px 32px 36px;
-    max-width: 640px;
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 24px;
-    border: 1px dashed rgba(138, 109, 26, 0.25);
-    backdrop-filter: blur(6px);
-}
-
-.anniversary-label {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(15px, 2vw, 19px);
-    color: var(--deep-navy);
-    font-style: italic;
-    margin-bottom: 12px;
-    letter-spacing: 0.3px;
-}
-
-.anniversary-number {
-    font-family: 'Mrs Saint Delafield', cursive;
-    font-size: clamp(72px, 12vw, 120px);
-    color: var(--navy-blue);
-    line-height: 1;
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 3px var(--shadow-blue);
-}
-
-.anniversary-unit {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--soft-blue);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 8px;
+@media (max-width: 380px) {
+    .countdown-sep { display: none; }
 }

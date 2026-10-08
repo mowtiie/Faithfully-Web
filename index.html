@@ -110,43 +110,46 @@
         <main class="main-content">
 
             <section class="page-section active" id="section-home">
-                <header>
+                <header class="home-hero">
+                    <div class="hero-sun" aria-hidden="true">🌻</div>
                     <h1 id="homeTitle">To Someone Special.</h1>
                     <p class="subtitle" id="homeSubtitle">A quiet place made just for you — letters, memories, and countdowns for the moments ahead. 🌻</p>
                 </header>
                 <div class="container">
-                    <div class="countdown-wrapper">
-                        <div class="countdown-label" id="countdownLabel">Counting down to something wonderful 🎂</div>
-                        <div class="countdown-blocks" id="countdownBlocks">
-                            <div class="countdown-block">
-                                <span class="countdown-num" id="cd-days">--</span>
-                                <span class="countdown-unit">days</span>
-                            </div>
-                            <div class="countdown-sep">:</div>
-                            <div class="countdown-block">
-                                <span class="countdown-num" id="cd-hours">--</span>
-                                <span class="countdown-unit">hours</span>
-                            </div>
-                            <div class="countdown-sep">:</div>
-                            <div class="countdown-block">
-                                <span class="countdown-num" id="cd-minutes">--</span>
-                                <span class="countdown-unit">mins</span>
-                            </div>
-                            <div class="countdown-sep">:</div>
-                            <div class="countdown-block">
-                                <span class="countdown-num" id="cd-seconds">--</span>
-                                <span class="countdown-unit">secs</span>
-                            </div>
+                    <div class="home-stats">
+                        <div class="anniversary-wrapper">
+                            <div class="anniversary-label" id="anniversaryLabel">Days on this journey 💛</div>
+                            <div class="anniversary-number" id="anniversaryDays">--</div>
+                            <div class="anniversary-unit" id="anniversaryUnit">days so far</div>
                         </div>
-                        <div class="countdown-birthday" id="countdownBirthday" style="display:none;">
-                            🎉🎂
-                        </div>
-                    </div>
 
-                    <div class="anniversary-wrapper">
-                        <div class="anniversary-label" id="anniversaryLabel">Days on this journey 💛</div>
-                        <div class="anniversary-number" id="anniversaryDays">--</div>
-                        <div class="anniversary-unit" id="anniversaryUnit">days so far</div>
+                        <div class="countdown-wrapper">
+                            <div class="countdown-label" id="countdownLabel">Counting down to something wonderful 🎂</div>
+                            <div class="countdown-blocks" id="countdownBlocks">
+                                <div class="countdown-block">
+                                    <span class="countdown-num" id="cd-days">--</span>
+                                    <span class="countdown-unit">days</span>
+                                </div>
+                                <div class="countdown-sep" aria-hidden="true">:</div>
+                                <div class="countdown-block">
+                                    <span class="countdown-num" id="cd-hours">--</span>
+                                    <span class="countdown-unit">hours</span>
+                                </div>
+                                <div class="countdown-sep" aria-hidden="true">:</div>
+                                <div class="countdown-block">
+                                    <span class="countdown-num" id="cd-minutes">--</span>
+                                    <span class="countdown-unit">mins</span>
+                                </div>
+                                <div class="countdown-sep" aria-hidden="true">:</div>
+                                <div class="countdown-block">
+                                    <span class="countdown-num" id="cd-seconds">--</span>
+                                    <span class="countdown-unit">secs</span>
+                                </div>
+                            </div>
+                            <div class="countdown-birthday" id="countdownBirthday" style="display:none;">
+                                🎉🎂
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
