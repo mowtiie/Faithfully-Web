@@ -425,7 +425,28 @@ const chapterMeta = {};
 // { chapterId, index } while a letter is open in the reader.
 let readerState = null;
 
+// Firestore listener handles. Each reload (auth change, chapter update) must
+// detach the previous ones, or they pile up and, after a sign-out, fire
+// permission errors that overwrite the sample letters.
+let chaptersUnsub = null;
+let cardsUnsubs   = [];
+
+function stopCardListeners() {
+    cardsUnsubs.forEach(unsub => unsub());
+    cardsUnsubs = [];
+}
+
+function stopLetterListeners() {
+    if (chaptersUnsub) {
+        chaptersUnsub();
+        chaptersUnsub = null;
+    }
+    stopCardListeners();
+}
+
 function loadLetters() {
+    stopLetterListeners();
+
     if (authMode === 'guest') {
         renderLettersFromData(MOCK_CHAPTERS, MOCK_CARDS);
         return;
@@ -434,9 +455,11 @@ function loadLetters() {
     const container = document.getElementById('chaptersContainer');
     container.innerHTML = LETTERS_SKELETON;
 
-    db.collection('chapters')
+    chaptersUnsub = db.collection('chapters')
         .orderBy('order', 'asc')
         .onSnapshot(chaptersSnap => {
+            stopCardListeners();
+
             if (chaptersSnap.empty) {
                 container.innerHTML = '<div class="empty-state">No chapters yet.</div>';
                 return;
@@ -450,7 +473,7 @@ function loadLetters() {
             chapters.forEach((chapter, i) => {
                 container.appendChild(buildChapterElement(chapter, i + 1));
 
-                db.collection('cards')
+                cardsUnsubs.push(db.collection('cards')
                     .where('chapterId', '==', chapter.id)
                     .orderBy('order', 'asc')
                     .onSnapshot(cardsSnap => {
@@ -459,7 +482,7 @@ function loadLetters() {
                         const cards = [];
                         cardsSnap.forEach(doc => cards.push({ id: doc.id, ...doc.data() }));
                         renderChapterCards(cardsGrid, cards, chapter.id);
-                    });
+                    }));
             });
         }, err => {
             container.innerHTML = '<div class="empty-state">Could not load letters. Check Firestore rules.</div>';
@@ -688,8 +711,15 @@ function trapFocus(container, e) {
 let galleryPhotos = [];
 let lightboxIndex = 0;
 
+let galleryUnsub = null;
+
 function loadGallery() {
     const grid = document.getElementById('galleryGrid');
+
+    if (galleryUnsub) {
+        galleryUnsub();
+        galleryUnsub = null;
+    }
 
     if (authMode === 'guest') {
         renderGalleryFromData(MOCK_GALLERY);
@@ -698,7 +728,7 @@ function loadGallery() {
 
     grid.innerHTML = '<div class="gallery-loading">Loading photos... 🐱</div>';
 
-    db.collection('gallery')
+    galleryUnsub = db.collection('gallery')
         .orderBy('order', 'asc')
         .onSnapshot(snapshot => {
             if (snapshot.empty) {
