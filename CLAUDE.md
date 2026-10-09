@@ -9,7 +9,7 @@
 A personal website built for someone specific (Alliyannah Faith / "Ali"). It has four sections:
 
 - **Home** — birthday countdown + days-together counter
-- **Letters** — chapters of handwritten letters organized as expandable cards
+- **Letters** — chapters of handwritten letters opened one at a time in a reader
 - **Apps** — showcase of Android apps the owner built for her (Faithful, Faithfully)
 - **Gallery** — cat photos with a lightbox viewer
 
@@ -20,29 +20,47 @@ Hosted on GitHub Pages at `alliyannah.love`. Uses Firebase Firestore + Storage +
 Two-mode auth with a UID allow list:
 
 - **`authed` mode** — signed in as an approved UID (admin or Ali). Reads real data from Firestore.
-- **`guest` mode** — everyone else. Sees hardcoded mock data (`MOCK_CHAPTERS`, `MOCK_CARDS`, `MOCK_GALLERY` in `script.js`).
+- **`guest` mode** — everyone else. Sees hardcoded mock data (`MOCK_CHAPTERS`, `MOCK_CARDS`, `MOCK_GALLERY` in `js/data/mock.js`).
 
-The allow list is `ALLOWED_UIDS` in `script.js`. A signed-in user whose UID is NOT on the list gets silently signed out and treated as a guest.
+The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID is NOT on the list gets silently signed out and treated as a guest.
 
-`authMode` is a top-level `let` variable. `onAuthStateChanged` is what updates it. Changes to `authMode` should trigger re-renders of any auth-aware content:
-- `renderHomeContent()` — swaps home title/subtitle/labels/dates
-- `anniversaryTick()` and `countdownTick()` — nudged manually because their intervals are slow
-- Section reload if the active section is data-dependent (letters, gallery)
+`authMode` is exported from `js/auth.js` and updated by `onAuthStateChanged`. Modules that depend on it register with `onAuthChange()` instead of being called by hand:
+- `js/home.js` — re-renders the hero text and refreshes the countdown and days-together counters
+- `js/router.js` — resets and reloads the active section if it is data-dependent (letters, gallery)
+- `js/login.js` — updates the sign-in button icon and label
 
 ## File structure
 
 ```
 .
 ├── index.html              Entry point — has all 4 sections + login overlay
-├── script.js               All JS — auth, Firestore, mock data, section rendering
+├── js/                     Native ES modules, loaded by js/main.js
+│   ├── main.js            Entry point — calls each module's init
+│   ├── firebase.js        Firebase init, db/auth handles, ALLOWED_UIDS
+│   ├── auth.js            authMode/authReady, onAuthChange(), signIn/signOut
+│   ├── login.js           Login overlay + sign-out dialog
+│   ├── router.js          Hash routing, lazy section loading
+│   ├── shell.js           Theme toggle, drawer collapse, sticky header, floating flowers
+│   ├── home.js            Hero content, countdown, days together
+│   ├── letters.js         Chapters + letter cards (Firestore or mock)
+│   ├── reader.js          Letter reader (progress, swipe, print, next chapter)
+│   ├── letter-store.js    Letters shared by letters.js and reader.js
+│   ├── apps.js            App showcase
+│   ├── gallery.js         Photo grid (Firestore or mock)
+│   ├── lightbox.js        Photo viewer
+│   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
+│   └── data/              mock.js (demo content), apps.js (app list)
 ├── css/
 │   ├── base.css           Reset, CSS variables, shared animations
 │   ├── layout.css         App shell, drawer, bottom nav, sticky header
 │   ├── home.css           Home page (header, countdowns, floating background)
 │   ├── letters.css        Chapters + card styling
+│   ├── reader.css         Letter reader + print styles
 │   ├── apps.css           App showcase cards
 │   ├── gallery.css        Photo grid + lightbox
-│   ├── auth.css           Login overlay, "SAMPLE" watermarks
+│   ├── login.css          Login overlay
+│   ├── dialog.css         Sign-out dialog
+│   ├── demo.css           "SAMPLE" watermarks
 │   └── theme.css          Dark mode overrides for everything above
 ├── apps/                   APK downloads (Faithful.apk, Faithfully.apk)
 ├── icons/                  App icons + favicon
@@ -62,11 +80,12 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 ## Conventions
 
 - **Modular CSS** — one file per major concern. Don't add styles to `base.css` unless they're global.
-- **Vanilla JS** — no frameworks, no imports, no build step. Everything is a global function or const in `script.js`.
-- **`escapeHtml()` and `escapeAttr()`** — use these for ANY user content in template literals. They're already defined near the bottom of `script.js`.
-- **Mock data must match structure of real data** — same field names, same types. `renderLettersFromData()` and `renderGalleryFromData()` don't care which source they got their data from.
+- **Vanilla JS** — no frameworks and no build step. Code is native ES modules under `js/`; each section owns its file and exposes an `initX()` that `js/main.js` calls. Avoid inline `onclick` attributes — attach listeners in the module. Serve over http (`py -m http.server`) because modules don't load from `file://`.
+- **Comments** — only when really needed (a non-obvious why). Never section banners or comments that restate the code. This applies to existing files too.
+- **`escapeHtml()` and `escapeAttr()`** — use these for ANY user content in template literals. They live in `js/ui.js`.
+- **Mock data must match structure of real data** — same field names, same types. `renderChapterCards()` and `renderGallery()` don't care which source they got their data from.
 - **Firestore real-time listeners** — used everywhere. Never use `.get()` for data that should update live.
-- **`sectionLoaded` tracker** — each section is lazy-loaded on first visit. Auth state changes reset the letters and gallery flags to force a re-fetch.
+- **`sectionLoaded` tracker** — in `js/router.js`; each section is lazy-loaded on first visit. Auth state changes reset the letters and gallery flags to force a re-fetch.
 
 ## Firestore schema
 
@@ -82,7 +101,7 @@ There's a separate repo `Faithfully-App` (Android admin app in Java). That app i
 
 ## Things to be careful about
 
-- **Personal data in HTML source** — the real subtitle text for signed-in users lives in `HOME_CONTENT.real` (JS), not the HTML. This is intentional — the HTML source stays generic so demo visitors can't view-source to see anything personal.
+- **Personal data in source** — `index.html` stays generic, but the real home text, the countdown and anniversary dates, and `ALLOWED_UIDS` currently live in `js/home.js` and `js/firebase.js`, which anyone can read. Don't add more personal content there; the plan is to move it into a Firestore document readable only by approved UIDs.
 - **`ALLOWED_UIDS`** — never remove existing UIDs without asking; that's how Ali gets access.
 - **Firestore Auth persistence** — set to LOCAL (indefinite). Don't change this without a reason.
 - **Copyright watermarks / SAMPLE badges** — automatically applied via `body.demo-mode` CSS. Don't add them per-element.

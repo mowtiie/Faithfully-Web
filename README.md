@@ -89,15 +89,33 @@ I intentionally avoided a framework. The whole site is a few hundred lines of pl
 ```
 .
 ├── index.html              # entry point
-├── script.js               # all interactivity — sections, countdowns, Firestore, gallery, auth, apps config
+├── js/                     # native ES modules, no build step
+│   ├── main.js            # entry point — wires every module together
+│   ├── firebase.js        # Firebase init + ALLOWED_UIDS
+│   ├── auth.js            # authMode / authReady + change notifications
+│   ├── login.js           # login overlay + sign-out dialog
+│   ├── router.js          # hash routing + lazy section loading
+│   ├── shell.js           # theme toggle, drawer collapse, sticky header, floating flowers
+│   ├── home.js            # hero content, countdown, days together
+│   ├── letters.js         # chapters + letter cards
+│   ├── reader.js          # the letter reader
+│   ├── letter-store.js    # letters shared by the list and the reader
+│   ├── apps.js            # app showcase
+│   ├── gallery.js         # photo grid
+│   ├── lightbox.js        # photo viewer
+│   ├── ui.js              # focus trap, scroll lock, escaping helpers
+│   └── data/              # mock.js (demo content), apps.js (app list)
 ├── css/
 │   ├── base.css           # reset, variables, shared animations
 │   ├── layout.css         # app shell, drawer (with collapse), bottom nav, sticky header
 │   ├── home.css           # header, countdowns, floating background
 │   ├── letters.css        # cards, chapters
+│   ├── reader.css         # letter reader + print styles
 │   ├── apps.css           # app showcase cards
 │   ├── gallery.css        # photo grid + lightbox
-│   ├── auth.css           # login overlay, "SAMPLE" watermarks
+│   ├── login.css          # login overlay
+│   ├── dialog.css         # sign-out dialog
+│   ├── demo.css           # "SAMPLE" watermarks
 │   └── theme.css          # all dark mode overrides
 ├── apps/                   # APK downloads served from the Apps section
 │   ├── Faithful.apk
@@ -128,7 +146,7 @@ I intentionally avoided a framework. The whole site is a few hundred lines of pl
       └────────┬─────────┘         └────────┬────────┘         └────────┬────────┘
                │ writes                     │ reads                     │ reads
                │ (UID-restricted)           │ (UID-restricted)          │ mock data
-               │                            │                           │ from script.js
+               │                            │                           │ from js/data/mock.js
                └───────────┬────────────────┘                           │
                            ▼                                            ▼
              ┌────────────────────────────────┐             (no Firebase call)
@@ -144,7 +162,7 @@ I intentionally avoided a framework. The whole site is a few hundred lines of pl
              └────────────────────────────────┘
 ```
 
-The Android app is the only thing that can *write* — security rules enforce my admin UID. Reads are restricted to two UIDs: mine (admin) and Ali's. Everyone else sees the demo version of the site, rendered from placeholder data hardcoded in `script.js`, without ever hitting Firestore.
+The Android app is the only thing that can *write* — security rules enforce my admin UID. Reads are restricted to two UIDs: mine (admin) and Ali's. Everyone else sees the demo version of the site, rendered from placeholder data hardcoded in `js/data/mock.js`, without ever hitting Firestore.
 
 ---
 
@@ -159,7 +177,7 @@ cd Faithfully-Web
 python3 -m http.server 8000
 ```
 
-For Firestore data and gallery photos to load, you'd need to point `script.js` at your own Firebase project, create your own admin + viewer accounts, and paste the resulting UIDs into `ALLOWED_UIDS` in `script.js` and the `firestore.rules` / `storage.rules` files. See `AUTH_SETUP.md` for the full walkthrough.
+For Firestore data and gallery photos to load, you'd need to point `js/firebase.js` at your own Firebase project, create your own admin + viewer accounts, and paste the resulting UIDs into `ALLOWED_UIDS` in `js/firebase.js` and the `firestore.rules` / `storage.rules` files. See `AUTH_SETUP.md` for the full walkthrough.
 
 Without configuring auth, you'll still see the site — just the demo mode with placeholder content.
 
