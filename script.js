@@ -645,6 +645,8 @@ function initLetters() {
         if (card) openLetter(card.dataset.chapter, Number(card.dataset.index));
     });
 
+    document.getElementById('readerPaper').addEventListener('scroll', updateReaderScroll, { passive: true });
+
     document.addEventListener('keydown', e => {
         const reader = document.getElementById('reader');
         if (!reader.classList.contains('active')) return;
@@ -691,6 +693,15 @@ function paintReader(keepScroll) {
     document.getElementById('readerNext').disabled = index === cards.length - 1;
 
     if (!keepScroll) document.getElementById('readerPaper').scrollTop = 0;
+    updateReaderScroll();
+}
+
+// Fill the progress bar to match how far through the letter she has scrolled.
+function updateReaderScroll() {
+    const paper = document.getElementById('readerPaper');
+    const max   = paper.scrollHeight - paper.clientHeight;
+    const ratio = max > 0 ? Math.min(1, paper.scrollTop / max) : 0;
+    document.getElementById('readerProgress').style.transform = 'scaleX(' + ratio + ')';
 }
 
 // Split the message on blank lines into paragraphs (textContent keeps it safe).
