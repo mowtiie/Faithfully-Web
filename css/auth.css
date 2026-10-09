@@ -1,8 +1,3 @@
-/* ============================================================
-   AUTH — login overlay, sign-out dialog, demo watermarks
-   ============================================================ */
-
-/* --- Login overlay (full-page) ------------------------------- */
 .login-overlay {
     position: fixed;
     inset: 0;
@@ -84,7 +79,6 @@
     color: var(--text-muted);
 }
 
-/* --- Form ---------------------------------------------------- */
 .login-form { display: flex; flex-direction: column; }
 
 .login-label {
@@ -181,7 +175,6 @@
     .login-logo  { font-size: 48px; }
 }
 
-/* --- Sign-out dialog ----------------------------------------- */
 .dialog {
     position: fixed;
     inset: 0;
@@ -267,7 +260,6 @@
 
 .dialog-btn-secondary:hover { background: var(--accent-soft); }
 
-/* --- Demo watermarks ----------------------------------------- */
 body.demo-mode .letter-card::after,
 body.demo-mode .reader-paper::after {
     content: 'SAMPLE';
