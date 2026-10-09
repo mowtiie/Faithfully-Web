@@ -1,14 +1,6 @@
 /* ============================================================
-   LAYOUT — page shell, drawer, bottom nav, top controls, banner
+   LAYOUT — page shell, drawer, bottom nav, top controls
    ============================================================ */
-
-body {
-    padding-top: var(--banner-h);
-}
-
-body.has-demo-banner {
-    --banner-h: 36px;
-}
 
 body.drawer-collapsed {
     --drawer-w: var(--drawer-w-collapsed);
@@ -97,7 +89,7 @@ body.drawer-collapsed {
         flex-direction: column;
         width: var(--drawer-w);
         position: fixed;
-        top: var(--banner-h);
+        top: 0;
         left: 0;
         bottom: 0;
         background: var(--surface);
@@ -293,7 +285,7 @@ body.drawer-collapsed {
 /* --- Sticky title bar ---------------------------------------- */
 .sticky-header {
     position: fixed;
-    top: var(--banner-h);
+    top: 0;
     left: 0;
     right: 0;
     height: 64px;
@@ -343,7 +335,7 @@ body.drawer-collapsed {
 /* --- Top-right controls (theme + account) -------------------- */
 .top-controls {
     position: fixed;
-    top: calc(var(--banner-h) + 10px);
+    top: 10px;
     right: 16px;
     z-index: 1100;
     display: flex;
@@ -388,37 +380,4 @@ body.drawer-collapsed {
     transition: transform 0.4s ease;
 }
 
-/* --- Demo banner --------------------------------------------- */
-.demo-banner {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 36px;
-    padding: 0 16px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-sunken);
-    border-bottom: 1px solid var(--border);
-    color: var(--heading);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-    overflow: hidden;
-    z-index: 1050;
-}
 
-.demo-banner.visible { display: flex; }
-
-.demo-banner a {
-    color: var(--navy);
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.demo-banner a:hover { opacity: 0.75; }
-
-@media (max-width: 768px) {
-    .demo-banner { font-size: 12px; }
-}

@@ -97,7 +97,7 @@ I intentionally avoided a framework. The whole site is a few hundred lines of pl
 │   ├── letters.css        # cards, chapters
 │   ├── apps.css           # app showcase cards
 │   ├── gallery.css        # photo grid + lightbox
-│   ├── auth.css           # login overlay, demo banner, "SAMPLE" watermarks
+│   ├── auth.css           # login overlay, "SAMPLE" watermarks
 │   └── theme.css          # all dark mode overrides
 ├── apps/                   # APK downloads served from the Apps section
 │   ├── Faithful.apk

@@ -184,15 +184,11 @@ auth.onAuthStateChanged(user => {
     if (user && ALLOWED_UIDS.has(user.uid)) {
         authMode = 'authed';
         document.body.classList.remove('demo-mode');
-        document.body.classList.remove('has-demo-banner');
-        document.getElementById('demoBanner').classList.remove('visible');
         document.getElementById('authBtnIcon').textContent = '👤';
         document.getElementById('authBtn').setAttribute('aria-label', 'Signed in — tap to sign out');
     } else {
         authMode = 'guest';
         document.body.classList.add('demo-mode');
-        document.body.classList.add('has-demo-banner');
-        document.getElementById('demoBanner').classList.add('visible');
         document.getElementById('authBtnIcon').textContent = '🔒';
         document.getElementById('authBtn').setAttribute('aria-label', 'Sign in');
 
