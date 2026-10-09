@@ -1,0 +1,42 @@
+body.demo-mode .letter-card::after,
+body.demo-mode .reader-paper::after {
+    content: 'SAMPLE';
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--heading);
+    background: var(--accent-soft);
+    border: 1px solid var(--border-strong);
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    z-index: 2;
+    pointer-events: none;
+}
+
+body.demo-mode .reader-paper::after {
+    top: 16px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+body.demo-mode .gallery-item::after {
+    content: 'SAMPLE';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--on-scrim);
+    background: var(--scrim-strong);
+    padding: 3px 7px;
+    border-radius: 8px;
+    z-index: 2;
+    pointer-events: none;
+}

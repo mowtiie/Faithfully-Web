@@ -1,0 +1,319 @@
+.reader {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.reader.active {
+    display: flex;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.reader-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+    backdrop-filter: blur(6px);
+}
+
+.reader-progress {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 3;
+    height: 3px;
+    background: transparent;
+    pointer-events: none;
+}
+
+.reader-progress span {
+    display: block;
+    height: 100%;
+    background: var(--accent-hover);
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+.reader-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    color: var(--heading);
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.2s var(--ease);
+}
+
+.reader-close:hover { background: var(--accent-soft); }
+
+.reader-print {
+    position: absolute;
+    top: 16px;
+    right: 66px;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    color: var(--heading);
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.2s var(--ease);
+}
+
+.reader-print:hover { background: var(--accent-soft); }
+
+.reader-top {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    display: none;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-raised);
+    color: var(--heading);
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: background 0.2s var(--ease);
+}
+
+.reader-top.visible { display: grid; }
+.reader-top:hover   { background: var(--accent-soft); }
+
+.reader-empty {
+    font-style: italic;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.reader-paper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 720px;
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(44px, 6vw, 60px) clamp(22px, 6vw, 64px) 28px;
+    background: linear-gradient(180deg, var(--surface-raised) 0%, var(--surface) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    animation: paperIn 0.45s var(--ease-out);
+}
+
+.reader-paper::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--accent);
+}
+
+@keyframes paperIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.reader-eyebrow {
+    padding-right: 48px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+}
+
+.reader-title {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-size: clamp(26px, 4.2vw, 38px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--heading);
+}
+
+.reader-title:focus { outline: none; }
+
+.reader-body {
+    font-family: var(--font-display);
+    font-size: clamp(17px, 2.2vw, 20px);
+    line-height: 1.95;
+    color: var(--text);
+    max-width: 62ch;
+    margin: 0 auto;
+    overflow-wrap: anywhere;
+}
+
+.reader-body p {
+    white-space: pre-line;
+}
+
+.reader-body p + p {
+    margin-top: 1.1em;
+}
+
+.reader-body::after {
+    content: '🌻';
+    display: block;
+    margin-top: 32px;
+    text-align: center;
+    font-size: 22px;
+    opacity: 0.7;
+}
+
+.reader-body p:first-child:not(.reader-empty)::first-letter {
+    float: left;
+    margin: 0.06em 0.12em 0 0;
+    font-size: 3.1em;
+    line-height: 0.85;
+    font-weight: 700;
+    color: var(--hand);
+}
+
+.reader-sign {
+    margin-top: 36px;
+    text-align: right;
+}
+
+.reader-sign[hidden] { display: none; }
+
+.reader-sign-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+}
+
+.reader-sign-name {
+    font-family: var(--font-hand);
+    font-size: 44px;
+    line-height: 1.1;
+    color: var(--hand);
+}
+
+.reader-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.reader-count {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.reader-step {
+    padding: 10px 18px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--heading);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s var(--ease), opacity 0.2s var(--ease);
+}
+
+.reader-step:hover:not(:disabled) { background: var(--accent-soft); }
+.reader-step:disabled { opacity: 0.35; cursor: default; }
+
+@page { margin: 2cm; }
+
+@media print {
+    body:has(.reader.active) > :not(.reader) { display: none !important; }
+
+    body:has(.reader.active),
+    body:has(.reader.active).dark-mode {
+        overflow: visible !important;
+        background: #fff;
+    }
+
+    .reader.active {
+        position: static;
+        display: block;
+        padding: 0;
+        animation: none;
+    }
+
+    .reader-backdrop,
+    .reader-close,
+    .reader-print,
+    .reader-top,
+    .reader-progress,
+    .reader-nav,
+    .sr-only,
+    .reader-paper::before {
+        display: none !important;
+    }
+
+    .reader-paper {
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: #fff;
+        animation: none;
+    }
+
+    .reader-eyebrow,
+    .reader-sign-label { color: #555; }
+
+    .reader-title {
+        color: #000;
+        font-size: 26pt;
+        break-after: avoid;
+        border-bottom-color: #bbb;
+    }
+
+    .reader-body {
+        max-width: none;
+        font-size: 12pt;
+        line-height: 1.7;
+        color: #000;
+    }
+
+    .reader-body p {
+        orphans: 3;
+        widows: 3;
+    }
+
+    .reader-body p:first-child:not(.reader-empty)::first-letter,
+    .reader-sign-name { color: #333; }
+
+    .reader-sign { break-inside: avoid; }
+}
