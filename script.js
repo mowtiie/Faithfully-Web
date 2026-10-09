@@ -680,7 +680,7 @@ function paintReader(keepScroll) {
     document.getElementById('readerEyebrow').textContent =
         meta ? chapterEyebrow(meta.number) + ' · ' + meta.title : '';
     document.getElementById('readerTitle').textContent = card.title || '';
-    document.getElementById('readerBody').textContent  = card.message || '';
+    paintReaderBody(card.message || '');
 
     const sign = document.getElementById('readerSign');
     sign.hidden = !card.dateLabel;
@@ -691,6 +691,18 @@ function paintReader(keepScroll) {
     document.getElementById('readerNext').disabled = index === cards.length - 1;
 
     if (!keepScroll) document.getElementById('readerPaper').scrollTop = 0;
+}
+
+// Split the message on blank lines into paragraphs (textContent keeps it safe).
+function paintReaderBody(message) {
+    const body = document.getElementById('readerBody');
+    body.textContent = '';
+    message.split(/\n\s*\n/).forEach(function (text) {
+        if (!text.trim()) return;
+        const p = document.createElement('p');
+        p.textContent = text.trim();
+        body.appendChild(p);
+    });
 }
 
 // A live Firestore update re-rendered the chapter the reader is showing.
