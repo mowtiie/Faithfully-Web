@@ -690,7 +690,12 @@ function paintReader(keepScroll) {
 
     document.getElementById('readerCount').textContent = (index + 1) + ' of ' + cards.length;
     document.getElementById('readerPrev').disabled = index === 0;
-    document.getElementById('readerNext').disabled = index === cards.length - 1;
+
+    // On the last letter, Next leads on to the next chapter, or back out.
+    const atEnd = index === cards.length - 1;
+    document.getElementById('readerNext').textContent = !atEnd
+        ? 'Next →'
+        : nextChapterId(chapterId) ? 'Next chapter →' : 'Back to chapter';
 
     if (!keepScroll) document.getElementById('readerPaper').scrollTop = 0;
     updateReaderScroll();
@@ -727,13 +732,39 @@ function refreshReader() {
     paintReader(true);
 }
 
+// The next chapter on the page that has at least one letter, or null.
+function nextChapterId(chapterId) {
+    const ids = [...document.querySelectorAll('#chaptersContainer .chapter-cards')]
+        .map(grid => grid.id.slice('cards-'.length));
+    const at = ids.indexOf(chapterId);
+    if (at === -1) return null;
+    return ids.slice(at + 1).find(id => (letterStore[id] || []).length > 0) || null;
+}
+
 function readerStep(delta) {
     if (!readerState) return;
     const cards = letterStore[readerState.chapterId] || [];
     const next  = readerState.index + delta;
+    if (next >= cards.length && delta > 0) {
+        const chapterId = nextChapterId(readerState.chapterId);
+        if (chapterId) {
+            readerState = { chapterId, index: 0 };
+            paintReader();
+        }
+        return;
+    }
     if (next < 0 || next >= cards.length) return;
     readerState.index = next;
     paintReader();
+}
+
+// The Next button also doubles as "Back to chapter" after the final letter.
+function readerNext() {
+    if (!readerState) return;
+    const cards = letterStore[readerState.chapterId] || [];
+    const atEnd = readerState.index === cards.length - 1;
+    if (atEnd && !nextChapterId(readerState.chapterId)) closeReader();
+    else readerStep(1);
 }
 
 function closeReader() {
