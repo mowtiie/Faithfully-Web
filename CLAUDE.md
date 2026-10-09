@@ -92,6 +92,7 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 - **`chapters/`**: `{ title, description, order }`
 - **`cards/`**: `{ title, message, dateLabel, date (Timestamp), order, chapterId }`
 - **`gallery/`**: `{ imageUrl, thumbnailUrl, caption, order, uploadedAt, storagePath, thumbnailPath }`
+- **`settings/home`**: `{ title, subtitle, stickyTitle, countdownLabel, countdownFinish, anniversaryLabel, anniversaryUnit, countdownTarget (Timestamp), anniversaryStart (Timestamp) }` — `subtitle` may contain `<br>` for line breaks
 
 Rules restrict reads to approved UIDs and writes to admin only. Rules file is in the Firebase project, not this repo.
 
@@ -101,7 +102,7 @@ There's a separate repo `Faithfully-App` (Android admin app in Java). That app i
 
 ## Things to be careful about
 
-- **Personal data in source** — `index.html` stays generic, but the real home text, the countdown and anniversary dates, and `ALLOWED_UIDS` currently live in `js/home.js` and `js/firebase.js`, which anyone can read. Don't add more personal content there; the plan is to move it into a Firestore document readable only by approved UIDs.
+- **Personal data** — the real home text and dates live in the Firestore document `settings/home`, never in the repo. `js/home.js` only holds generic sample text and reads the document for approved users. Don't hardcode personal strings or dates in HTML, JS or CSS.
 - **`ALLOWED_UIDS`** — never remove existing UIDs without asking; that's how Ali gets access.
 - **Firestore Auth persistence** — set to LOCAL (indefinite). Don't change this without a reason.
 - **Copyright watermarks / SAMPLE badges** — automatically applied via `body.demo-mode` CSS. Don't add them per-element.
