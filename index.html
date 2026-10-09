@@ -218,9 +218,10 @@
         <div class="reader-backdrop" onclick="closeReader()"></div>
         <div class="reader-progress" aria-hidden="true"><span id="readerProgress"></span></div>
         <button class="reader-close" id="readerClose" type="button" onclick="closeReader()" aria-label="Close letter">✕</button>
+        <p class="sr-only" id="readerAnnounce" aria-live="polite"></p>
         <article class="reader-paper" id="readerPaper">
             <p class="reader-eyebrow" id="readerEyebrow"></p>
-            <h3 class="reader-title" id="readerTitle"></h3>
+            <h3 class="reader-title" id="readerTitle" tabindex="-1"></h3>
             <div class="reader-body" id="readerBody"></div>
             <p class="reader-sign" id="readerSign">
                 <span class="reader-sign-label">Written on</span>

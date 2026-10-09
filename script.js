@@ -670,7 +670,7 @@ function openLetter(chapterId, index) {
     reader.classList.add('active');
     reader.setAttribute('aria-hidden', 'false');
     lockScroll();
-    document.getElementById('readerClose').focus();
+    document.getElementById('readerTitle').focus({ preventScroll: true });
 }
 
 function paintReader(keepScroll) {
@@ -699,6 +699,13 @@ function paintReader(keepScroll) {
 
     if (!keepScroll) document.getElementById('readerPaper').scrollTop = 0;
     updateReaderScroll();
+
+    // Let screen readers know which letter is showing after Previous/Next.
+    // Not on live refreshes, and the dialog label already covers the first open.
+    if (!keepScroll && document.getElementById('reader').classList.contains('active')) {
+        document.getElementById('readerAnnounce').textContent =
+            'Letter ' + (index + 1) + ' of ' + cards.length + ': ' + (card.title || '');
+    }
 }
 
 // Fill the progress bar to match how far through the letter she has scrolled.

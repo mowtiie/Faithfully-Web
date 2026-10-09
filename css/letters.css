@@ -297,6 +297,9 @@
     color: var(--heading);
 }
 
+/* Focus lands here when a letter opens; it is a landing point, not a control. */
+.reader-title:focus { outline: none; }
+
 .reader-body {
     font-family: var(--font-display);
     font-size: clamp(17px, 2.2vw, 20px);
