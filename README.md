@@ -56,15 +56,14 @@ What began as a single static page turned into a full system: chapters of letter
 - 📱 Collapsible side drawer on desktop, bottom nav on mobile — same components, fully responsive
 - ☁️ Firebase Storage for photo hosting with public CDN delivery
 - 🔒 Two-layer security — client-side auth UI + Firestore security rules that require an allow-listed UID
-- 🎨 Modular CSS architecture — split into 8 focused files instead of one giant `styles.css`
 
 ---
 
 ## 📸 Screenshots
 
-| Home | Letters | Gallery | Dark mode |
+| Home | Dark mode | Sign in | Apps |
 |:---:|:---:|:---:|:---:|
-| ![Home](screenshots/screenshot_1.png) | ![Dark Mode](screenshots/screenshot_2.png) | ![Auth](screenshots/screenshot_3.png) | ![Apps](screenshots/screenshot_4.png) |
+| ![Home](screenshots/screenshot_1.png) | ![Dark mode](screenshots/screenshot_2.png) | ![Sign in](screenshots/screenshot_3.png) | ![Apps](screenshots/screenshot_4.png) |
 
 ---
 
@@ -79,60 +78,6 @@ What began as a single static page turned into a full system: chapters of letter
 | **Hosting** | [GitHub Pages](https://pages.github.com/) with free HTTPS |
 | **Fonts** | Google Fonts — *Playfair Display*, *Mrs Saint Delafield*, *Inter* |
 | **Companion** | [Faithfully App](https://github.com/mowtiie/Faithfully-App) — Android app in Java |
-
-I intentionally avoided a framework. The whole site is a few hundred lines of plain JavaScript and CSS split into modular files, which keeps it fast, light, and easy to maintain.
-
----
-
-## 📁 Project structure
-
-```
-.
-├── index.html              # entry point
-├── js/                     # native ES modules, no build step
-│   ├── main.js            # entry point — wires every module together
-│   ├── firebase.js        # Firebase init + ALLOWED_UIDS
-│   ├── auth.js            # authMode / authReady + change notifications
-│   ├── login.js           # login overlay + sign-out dialog
-│   ├── router.js          # hash routing + lazy section loading
-│   ├── shell.js           # theme toggle, drawer collapse, sticky header, floating flowers
-│   ├── home.js            # hero content, countdown, days together
-│   ├── letters.js         # chapters + letter cards
-│   ├── reader.js          # the letter reader
-│   ├── letter-store.js    # letters shared by the list and the reader
-│   ├── apps.js            # app showcase
-│   ├── gallery.js         # photo grid
-│   ├── lightbox.js        # photo viewer
-│   ├── ui.js              # focus trap, scroll lock, escaping helpers
-│   └── data/              # mock.js (demo content), apps.js (app list)
-├── css/
-│   ├── base.css           # reset, variables, shared animations
-│   ├── layout.css         # app shell, drawer (with collapse), bottom nav, sticky header
-│   ├── home.css           # header, countdowns, floating background
-│   ├── letters.css        # cards, chapters
-│   ├── reader.css         # letter reader + print styles
-│   ├── apps.css           # app showcase cards
-│   ├── gallery.css        # photo grid + lightbox
-│   ├── login.css          # login overlay
-│   ├── dialog.css         # sign-out dialog
-│   ├── demo.css           # "SAMPLE" watermarks
-│   └── theme.css          # all dark mode overrides
-├── apps/                   # APK downloads served from the Apps section
-│   ├── Faithful.apk
-│   └── Faithfully.apk
-├── icons/                  # app icons + favicon
-│   ├── faithful.png
-│   ├── faithfully.png
-│   └── icon.png
-├── screenshots/            # images used in this README
-│   ├── home.png
-│   ├── letters.png
-│   ├── gallery.png
-│   └── dark-mode.png
-├── CNAME                   # custom domain config for GitHub Pages
-├── LICENSE
-└── README.md
-```
 
 ---
 
@@ -155,6 +100,7 @@ I intentionally avoided a framework. The whole site is a few hundred lines of pl
              │     - chapters/                │
              │     - cards/                   │
              │     - gallery/                 │
+             │     - settings/                │
              │   • Storage                    │
              │     - gallery/*.jpg            │
              │   • Auth                       │
@@ -162,36 +108,23 @@ I intentionally avoided a framework. The whole site is a few hundred lines of pl
              └────────────────────────────────┘
 ```
 
-The Android app is the only thing that can *write* — security rules enforce my admin UID. Reads are restricted to two UIDs: mine (admin) and Ali's. Everyone else sees the demo version of the site, rendered from placeholder data hardcoded in `js/data/mock.js`, without ever hitting Firestore.
+The Android app is the only thing that can *write*. Reads are restricted to approved UIDs by Firestore security rules; everyone else sees placeholder data from `js/data/mock.js` and never hits Firestore.
 
 ---
 
 ## 🔧 Running it yourself
 
-It's a static site, so:
+It's a static site made of native ES modules, so it needs a local server (modules don't load from `file://`):
 
 ```bash
 git clone https://github.com/mowtiie/Faithfully-Web.git
 cd Faithfully-Web
-# Open index.html in any browser, or serve locally:
 python3 -m http.server 8000
 ```
 
-For Firestore data and gallery photos to load, you'd need to point `js/firebase.js` at your own Firebase project, create your own admin + viewer accounts, and paste the resulting UIDs into `ALLOWED_UIDS` in `js/firebase.js` and the `firestore.rules` / `storage.rules` files. See `AUTH_SETUP.md` for the full walkthrough.
+For Firestore data and gallery photos to load, you'd need to point `js/firebase.js` at your own Firebase project, create your own admin and viewer accounts, put their UIDs in `ALLOWED_UIDS` in `js/firebase.js`, and write matching Firestore security rules.
 
 Without configuring auth, you'll still see the site — just the demo mode with placeholder content.
-
----
-
-## 🧠 What I learned
-
-- How to design and ship a small full-stack system end to end
-- Firestore security rules — the API key in client code is fine when paired with strong rules and HTTP referrer restrictions
-- Splitting CSS into focused files at the right time is way better than a 1500-line `styles.css`
-- Real-time UIs feel magical when they work — uploading a photo from my phone makes it appear on the site in under a second
-- Image optimization is critical — serving 5MB phone photos directly would have made the gallery painfully slow
-- Two-layer auth (client-side UI + server-side rules) is the right pattern — the UI is the pleasant experience, the rules are the actual security
-- Demo mode with hardcoded mock data is a lovely way to make a private site publicly showcase-able without ever exposing anything real
 
 ---
 
