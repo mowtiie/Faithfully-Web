@@ -647,6 +647,26 @@ function initLetters() {
 
     document.getElementById('readerPaper').addEventListener('scroll', updateReaderScroll, { passive: true });
 
+    // Swipe between letters. Only clearly horizontal drags count, so vertical
+    // scrolling and text selection are left alone.
+    let swipe = null;
+    const paper = document.getElementById('readerPaper');
+    paper.addEventListener('touchstart', e => {
+        swipe = e.touches.length === 1
+            ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
+            : null;
+    }, { passive: true });
+    paper.addEventListener('touchend', e => {
+        if (!swipe) return;
+        const t  = e.changedTouches[0];
+        const dx = t.clientX - swipe.x;
+        const dy = t.clientY - swipe.y;
+        swipe = null;
+        if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        readerStep(dx < 0 ? 1 : -1);
+    }, { passive: true });
+    paper.addEventListener('touchcancel', () => { swipe = null; }, { passive: true });
+
     document.addEventListener('keydown', e => {
         const reader = document.getElementById('reader');
         if (!reader.classList.contains('active')) return;
