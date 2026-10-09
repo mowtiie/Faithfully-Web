@@ -247,6 +247,27 @@
 
 .reader-close:hover { background: var(--accent-soft); }
 
+.reader-print {
+    position: absolute;
+    top: 16px;
+    right: 66px;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    color: var(--heading);
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.2s var(--ease);
+}
+
+.reader-print:hover { background: var(--accent-soft); }
+
 /* Appears once she has scrolled well into a long letter. */
 .reader-top {
     position: absolute;
@@ -458,4 +479,75 @@
 @media (max-width: 480px) {
     .cards-grid { grid-template-columns: 1fr; }
     .letter-card { padding: 24px 20px 20px; }
+}
+
+/* --- Print: just the open letter, on plain paper ------------------ */
+@page { margin: 2cm; }
+
+@media print {
+    /* Only when a letter is open; otherwise print the page as usual. */
+    body:has(.reader.active) > :not(.reader) { display: none !important; }
+
+    body:has(.reader.active),
+    body:has(.reader.active).dark-mode {
+        overflow: visible !important;
+        background: #fff;
+    }
+
+    .reader.active {
+        position: static;
+        display: block;
+        padding: 0;
+        animation: none;
+    }
+
+    .reader-backdrop,
+    .reader-close,
+    .reader-print,
+    .reader-top,
+    .reader-progress,
+    .reader-nav,
+    .sr-only,
+    .reader-paper::before {
+        display: none !important;
+    }
+
+    .reader-paper {
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: #fff;
+        animation: none;
+    }
+
+    .reader-eyebrow,
+    .reader-sign-label { color: #555; }
+
+    .reader-title {
+        color: #000;
+        font-size: 26pt;
+        break-after: avoid;
+        border-bottom-color: #bbb;
+    }
+
+    .reader-body {
+        max-width: none;
+        font-size: 12pt;
+        line-height: 1.7;
+        color: #000;
+    }
+
+    .reader-body p {
+        orphans: 3;
+        widows: 3;
+    }
+
+    .reader-body p:first-child:not(.reader-empty)::first-letter,
+    .reader-sign-name { color: #333; }
+
+    .reader-sign { break-inside: avoid; }
 }
