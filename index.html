@@ -38,13 +38,13 @@
             <span class="theme-icon">🌙</span>
         </button>
 
-        <button class="auth-btn" id="authBtn" onclick="handleAuthBtnClick()" aria-label="Sign in">
+        <button class="auth-btn" id="authBtn" aria-label="Sign in">
             <span id="authBtnIcon">🔒</span>
         </button>
     </div>
 
     <div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle" aria-hidden="true">
-        <button class="login-close" type="button" onclick="closeLogin()" aria-label="Close sign in">✕</button>
+        <button class="login-close" type="button" aria-label="Close sign in">✕</button>
         <div class="login-card">
             <div class="login-brand">
                 <div class="login-logo" aria-hidden="true">🌻</div>
@@ -52,14 +52,14 @@
                 <p class="login-subtitle">Sign in to read your letters</p>
             </div>
 
-            <form class="login-form" onsubmit="return submitLogin(event)">
+            <form class="login-form">
                 <label class="login-label" for="loginEmail">Email</label>
                 <input class="login-input" id="loginEmail" type="email" autocomplete="email" required>
 
                 <label class="login-label" for="loginPassword">Password</label>
                 <div class="login-field">
                     <input class="login-input" id="loginPassword" type="password" autocomplete="current-password" required>
-                    <button class="login-reveal" id="loginReveal" type="button" aria-pressed="false" onclick="togglePasswordVisibility()">Show</button>
+                    <button class="login-reveal" id="loginReveal" type="button" aria-pressed="false">Show</button>
                 </div>
 
                 <div class="login-error" id="loginError" role="alert"></div>
@@ -74,14 +74,14 @@
     </div>
 
     <div class="dialog" id="signOutDialog" role="alertdialog" aria-modal="true" aria-labelledby="signOutTitle" aria-describedby="signOutText" aria-hidden="true">
-        <div class="dialog-backdrop" onclick="closeSignOutDialog()"></div>
+        <div class="dialog-backdrop"></div>
         <div class="dialog-card">
             <div class="dialog-icon" aria-hidden="true">🌻</div>
             <h2 class="dialog-title" id="signOutTitle">Sign out?</h2>
             <p class="dialog-text" id="signOutText">You'll go back to the demo version of the site until you sign in again.</p>
             <div class="dialog-actions">
-                <button class="dialog-btn dialog-btn-secondary" id="signOutCancel" type="button" onclick="closeSignOutDialog()">Stay</button>
-                <button class="dialog-btn dialog-btn-primary" type="button" onclick="confirmSignOut()">Sign out</button>
+                <button class="dialog-btn dialog-btn-secondary" id="signOutCancel" type="button">Stay</button>
+                <button class="dialog-btn dialog-btn-primary" id="signOutConfirm" type="button">Sign out</button>
             </div>
         </div>
     </div>
@@ -94,19 +94,19 @@
                 <span class="drawer-name">Hers</span>
             </div>
             <nav class="drawer-nav">
-                <button class="nav-btn active" data-section="home" title="Home" onclick="switchSection('home', this)">
+                <button class="nav-btn active" data-section="home" title="Home">
                     <span class="nav-icon">🏠</span>
                     <span class="nav-label">Home</span>
                 </button>
-                <button class="nav-btn" data-section="letters" title="Letters" onclick="switchSection('letters', this)">
+                <button class="nav-btn" data-section="letters" title="Letters">
                     <span class="nav-icon">💌</span>
                     <span class="nav-label">Letters</span>
                 </button>
-                <button class="nav-btn" data-section="apps" title="Apps" onclick="switchSection('apps', this)">
+                <button class="nav-btn" data-section="apps" title="Apps">
                     <span class="nav-icon">📱</span>
                     <span class="nav-label">Apps</span>
                 </button>
-                <button class="nav-btn" data-section="gallery" title="Gallery" onclick="switchSection('gallery', this)">
+                <button class="nav-btn" data-section="gallery" title="Gallery">
                     <span class="nav-icon">🐱</span>
                     <span class="nav-label">Gallery</span>
                 </button>
@@ -210,11 +210,11 @@
     </div>
 
     <div class="reader" id="reader" role="dialog" aria-modal="true" aria-labelledby="readerTitle" aria-hidden="true">
-        <div class="reader-backdrop" onclick="closeReader()"></div>
+        <div class="reader-backdrop"></div>
         <div class="reader-progress" aria-hidden="true"><span id="readerProgress"></span></div>
-        <button class="reader-print" type="button" onclick="window.print()" aria-label="Print or save this letter as PDF">🖨</button>
-        <button class="reader-close" id="readerClose" type="button" onclick="closeReader()" aria-label="Close letter">✕</button>
-        <button class="reader-top" id="readerTop" type="button" onclick="readerToTop()" aria-label="Back to top of letter">↑</button>
+        <button class="reader-print" id="readerPrint" type="button" aria-label="Print or save this letter as PDF">🖨</button>
+        <button class="reader-close" id="readerClose" type="button" aria-label="Close letter">✕</button>
+        <button class="reader-top" id="readerTop" type="button" aria-label="Back to top of letter">↑</button>
         <p class="sr-only" id="readerAnnounce" aria-live="polite"></p>
         <article class="reader-paper" id="readerPaper">
             <p class="reader-eyebrow" id="readerEyebrow"></p>
@@ -225,18 +225,18 @@
                 <span class="reader-sign-name" id="readerDate"></span>
             </p>
             <nav class="reader-nav" aria-label="Letters in this chapter">
-                <button class="reader-step" id="readerPrev" type="button" onclick="readerStep(-1)">← Previous</button>
+                <button class="reader-step" id="readerPrev" type="button">← Previous</button>
                 <span class="reader-count" id="readerCount"></span>
-                <button class="reader-step" id="readerNext" type="button" onclick="readerNext()">Next →</button>
+                <button class="reader-step" id="readerNext" type="button">Next →</button>
             </nav>
         </article>
     </div>
 
-    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true" onclick="closeLightbox()">
-        <button class="lightbox-close" type="button" onclick="closeLightbox()" aria-label="Close photo viewer">✕</button>
-        <button class="lightbox-prev" type="button" onclick="event.stopPropagation(); lightboxPrev()" aria-label="Previous photo">‹</button>
-        <button class="lightbox-next" type="button" onclick="event.stopPropagation(); lightboxNext()" aria-label="Next photo">›</button>
-        <div class="lightbox-content" onclick="event.stopPropagation()">
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true">
+        <button class="lightbox-close" type="button" aria-label="Close photo viewer">✕</button>
+        <button class="lightbox-prev" type="button" aria-label="Previous photo">‹</button>
+        <button class="lightbox-next" type="button" aria-label="Next photo">›</button>
+        <div class="lightbox-content">
             <img class="lightbox-img" id="lightboxImg" src="" alt="">
             <p class="lightbox-caption" id="lightboxCaption"></p>
             <p class="lightbox-count" id="lightboxCount" aria-live="polite"></p>
@@ -244,19 +244,19 @@
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-btn active" data-section="home" onclick="switchSection('home', this)">
+        <button class="nav-btn active" data-section="home">
             <span class="nav-icon">🏠</span>
             <span class="nav-label">Home</span>
         </button>
-        <button class="nav-btn" data-section="letters" onclick="switchSection('letters', this)">
+        <button class="nav-btn" data-section="letters">
             <span class="nav-icon">💌</span>
             <span class="nav-label">Letters</span>
         </button>
-        <button class="nav-btn" data-section="apps" onclick="switchSection('apps', this)">
+        <button class="nav-btn" data-section="apps">
             <span class="nav-icon">📱</span>
             <span class="nav-label">Apps</span>
         </button>
-        <button class="nav-btn" data-section="gallery" onclick="switchSection('gallery', this)">
+        <button class="nav-btn" data-section="gallery">
             <span class="nav-icon">🐱</span>
             <span class="nav-label">Gallery</span>
         </button>
@@ -265,6 +265,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
