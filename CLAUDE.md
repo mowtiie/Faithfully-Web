@@ -33,7 +33,7 @@ The allow list is `ALLOWED_UIDS` in `script.js`. A signed-in user whose UID is N
 
 ```
 .
-├── index.html              Entry point — has all 4 sections + login overlay + demo banner
+├── index.html              Entry point — has all 4 sections + login overlay
 ├── script.js               All JS — auth, Firestore, mock data, section rendering
 ├── css/
 │   ├── base.css           Reset, CSS variables, shared animations
@@ -42,7 +42,7 @@ The allow list is `ALLOWED_UIDS` in `script.js`. A signed-in user whose UID is N
 │   ├── letters.css        Chapters + card styling
 │   ├── apps.css           App showcase cards
 │   ├── gallery.css        Photo grid + lightbox
-│   ├── auth.css           Login overlay, demo banner, "SAMPLE" watermarks
+│   ├── auth.css           Login overlay, "SAMPLE" watermarks
 │   └── theme.css          Dark mode overrides for everything above
 ├── apps/                   APK downloads (Faithful.apk, Faithfully.apk)
 ├── icons/                  App icons + favicon
