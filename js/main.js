@@ -1,0 +1,22 @@
+import { startAuth } from './auth.js';
+import { initLogin } from './login.js';
+import { initFloatingHearts, initThemeToggle, initDrawerCollapse, initStickyHeader } from './shell.js';
+import { initHome } from './home.js';
+import { initLetters } from './letters.js';
+import { initReader } from './reader.js';
+import { initGallery } from './gallery.js';
+import { initLightbox } from './lightbox.js';
+import { initRouter } from './router.js';
+
+initFloatingHearts();
+initThemeToggle();
+initDrawerCollapse();
+initStickyHeader();
+initLogin();
+initHome();
+initLetters();
+initReader();
+initGallery();
+initLightbox();
+initRouter();
+startAuth();
