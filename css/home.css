@@ -194,3 +194,17 @@
 @media (max-width: 380px) {
     .countdown-sep { display: none; }
 }
+
+.home-hero h1,
+.home-hero .subtitle,
+.home-stats,
+.sticky-title {
+    transition: opacity 0.5s var(--ease);
+}
+
+body.home-pending .home-hero h1,
+body.home-pending .home-hero .subtitle,
+body.home-pending .home-stats,
+body.home-pending .sticky-title {
+    opacity: 0;
+}
