@@ -714,6 +714,7 @@ function updateReaderScroll() {
     const max   = paper.scrollHeight - paper.clientHeight;
     const ratio = max > 0 ? Math.min(1, paper.scrollTop / max) : 0;
     document.getElementById('readerProgress').style.transform = 'scaleX(' + ratio + ')';
+    document.getElementById('readerTop').classList.toggle('visible', paper.scrollTop > 600);
 }
 
 // Split the message on blank lines into paragraphs (textContent keeps it safe).
@@ -726,6 +727,18 @@ function paintReaderBody(message) {
         p.textContent = text.trim();
         body.appendChild(p);
     });
+
+    if (!body.firstChild) {
+        const empty = document.createElement('p');
+        empty.className = 'reader-empty';
+        empty.textContent = 'This letter is still being written. 🌻';
+        body.appendChild(empty);
+    }
+}
+
+function readerToTop() {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('readerPaper').scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
 }
 
 // A live Firestore update re-rendered the chapter the reader is showing.
