@@ -15,5 +15,6 @@ export const auth = firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 export const ALLOWED_UIDS = new Set([
+    "371O09ErYFShTBzNDdInf40FUE23",
     "h0yjVpgq6pbreAD3aZvQOcaOp4F3"
 ]);
