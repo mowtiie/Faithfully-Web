@@ -213,3 +213,9 @@
 .lightbox-admin .admin-btn:hover:not(:disabled) { background: rgba(253, 246, 227, 0.16); }
 
 .lightbox.has-admin .lightbox-img { max-height: 64vh; }
+
+.lightbox-admin .admin-btn-danger {
+    margin-left: 0;
+    border-color: #ff8a7a;
+    color: #ff8a7a;
+}

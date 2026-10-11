@@ -16,6 +16,9 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 export const ADMIN_UID = "371O09ErYFShTBzNDdInf40FUE23";
 
+export const UPLOAD_WORKER_URL = "https://faithfully-upload.mowtiie-dev.workers.dev";
+export const PHOTO_BASE_URL    = "https://pub-c1d51023022a499387032279c20ac678.r2.dev";
+
 export const ALLOWED_UIDS = new Set([
     "371O09ErYFShTBzNDdInf40FUE23",
     "h0yjVpgq6pbreAD3aZvQOcaOp4F3"

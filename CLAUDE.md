@@ -54,7 +54,8 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── admin.js           Shared editor, confirm and notice dialogs for the admin controls
 │   ├── letters-admin.js   Add/edit/delete/reorder chapters and letters (admin only)
 │   ├── apps-admin.js      Add/edit/delete/reorder apps and the one-time import of the built-in list (admin only)
-│   ├── gallery-admin.js   Edit caption and move photos earlier/later, inside the lightbox (admin only)
+│   ├── gallery-admin.js   Add photo, edit caption, move earlier/later and delete, inside the gallery and lightbox (admin only)
+│   ├── photo-upload.js    Shrinks a photo to a full image and a thumbnail and uploads/deletes them through the Cloudflare Worker
 │   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
 │   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
 │   └── data/              mock.js (demo content), apps.js (app list)
@@ -104,6 +105,7 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 - **`gallery/`**: `{ imageUrl, thumbnailUrl, caption, order, uploadedAt, storagePath, thumbnailPath }`
 - **`settings/home`**: `{ title, subtitle, stickyTitle, countdownLabel, countdownFinish, anniversaryLabel, anniversaryUnit, countdownTarget (Timestamp), anniversaryStart (Timestamp) }` — `subtitle` may contain `<br>` for line breaks
 
+  Photos added from the website are stored in Cloudflare R2, not Firebase Storage: `imageUrl` / `thumbnailUrl` are `PHOTO_BASE_URL` (an `r2.dev` address in `js/firebase.js`) plus `gallery/<name>.jpg` and `gallery/thumbs/<name>.jpg`, and `storagePath` / `thumbnailPath` hold those keys. Uploads and deletes go through the Worker at `UPLOAD_WORKER_URL`, which only accepts the admin's Firebase login token. Older photos still point at Firebase Storage until the migration runs; deleting one of those from the site removes only the Firestore entry. The Worker source and its tests live in `.local/worker/` (untracked).
 - **`apps/`**: `{ name, tagline, description, version, icon (emoji), iconImage (url), downloadUrl, sourceUrl, order }` — signed-in users read this; guests, and signed-in users while it is empty or unreadable, see the built-in list in `js/data/apps.js`. Links are plain text the admin pastes; APK and icon files are not uploaded from the site.
 - **`settings/draw`**: `{ players: { <uid>: emoji } }` — which emoji (🐝 / 🌻) belongs to which account; set by hand in the console
 - **`draw/board`**: `{ epoch, lastBy (uid or null), updatedAt }` — whose turn it is; `epoch` goes up when the paper is cleared

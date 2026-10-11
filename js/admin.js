@@ -47,6 +47,8 @@ function fieldHtml(field, i) {
     let control;
     if (field.type === 'textarea') {
         control = `<textarea class="editor-input" id="${id}" name="${escapeAttr(field.name)}" rows="${field.rows || 5}"${req}${hint}>${escapeHtml(value)}</textarea>`;
+    } else if (field.type === 'file') {
+        control = `<input class="editor-input" id="${id}" name="${escapeAttr(field.name)}" type="file" accept="${escapeAttr(field.accept || '')}"${req}>`;
     } else if (field.type === 'select') {
         const options = field.options.map(o =>
             `<option value="${escapeAttr(o.value)}"${o.value === value ? ' selected' : ''}>${escapeHtml(o.label)}</option>`
@@ -80,6 +82,7 @@ export function openEditor({ title, fields, submitLabel = 'Save', onSubmit }) {
     const form    = el.querySelector('form');
     const errorEl = el.querySelector('.editor-error');
     const buttons = el.querySelectorAll('.dialog-btn');
+    const submitBtn = form.querySelector('[type="submit"]');
     const close   = () => unmount(el, opener);
 
     active = { el, cancel: close };
@@ -90,7 +93,9 @@ export function openEditor({ title, fields, submitLabel = 'Save', onSubmit }) {
         errorEl.textContent = '';
 
         const values = {};
-        for (const [key, raw] of new FormData(form)) values[key] = String(raw).trim();
+        for (const [key, raw] of new FormData(form)) {
+            values[key] = raw instanceof File ? (raw.size > 0 ? raw : null) : String(raw).trim();
+        }
 
         const missing = fields.find(f => f.required && !values[f.name]);
         if (missing) {
@@ -99,13 +104,16 @@ export function openEditor({ title, fields, submitLabel = 'Save', onSubmit }) {
             return;
         }
 
+        const label = submitBtn.textContent;
+        submitBtn.textContent = 'Saving…';
         buttons.forEach(b => { b.disabled = true; });
         try {
             await onSubmit(values);
             close();
         } catch (err) {
             console.error(err);
-            errorEl.textContent = 'Could not save. Check your connection and try again.';
+            errorEl.textContent = err.userMessage || 'Could not save. Check your connection and try again.';
+            submitBtn.textContent = label;
             buttons.forEach(b => { b.disabled = false; });
         }
     });

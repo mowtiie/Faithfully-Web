@@ -228,6 +228,9 @@
                     <p class="section-subtitle">A collection of cat photos, curated for you.</p>
                 </header>
                 <div class="container">
+                    <div class="admin-row">
+                        <button type="button" class="admin-btn admin-btn-primary" id="addPhotoBtn" hidden>＋ Add photo</button>
+                    </div>
                     <div class="gallery-grid" id="galleryGrid">
                         <div class="gallery-loading">Loading photos... 🐱</div>
                     </div>
@@ -314,6 +317,7 @@
                 <button type="button" class="admin-btn" data-admin="edit-caption">Edit caption</button>
                 <button type="button" class="admin-btn" data-admin="photo-earlier">‹ Earlier</button>
                 <button type="button" class="admin-btn" data-admin="photo-later">Later ›</button>
+                <button type="button" class="admin-btn admin-btn-danger" data-admin="delete-photo">Delete</button>
             </div>
         </div>
     </div>
