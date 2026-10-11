@@ -22,6 +22,7 @@ body.dark-mode {
     --navy:           #a9c1e3;
     --navy-soft:      rgba(169, 193, 227, 0.12);
     --danger:         #ff8a7a;
+    --success:        #8fd18a;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.4);

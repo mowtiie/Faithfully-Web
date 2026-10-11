@@ -47,8 +47,6 @@ function fieldHtml(field, i) {
     let control;
     if (field.type === 'textarea') {
         control = `<textarea class="editor-input" id="${id}" name="${escapeAttr(field.name)}" rows="${field.rows || 5}"${req}${hint}>${escapeHtml(value)}</textarea>`;
-    } else if (field.type === 'file') {
-        control = `<input class="editor-input" id="${id}" name="${escapeAttr(field.name)}" type="file" accept="${escapeAttr(field.accept || '')}"${req}>`;
     } else if (field.type === 'select') {
         const options = field.options.map(o =>
             `<option value="${escapeAttr(o.value)}"${o.value === value ? ' selected' : ''}>${escapeHtml(o.label)}</option>`
@@ -62,6 +60,15 @@ function fieldHtml(field, i) {
         <label class="editor-label" for="${id}">${escapeHtml(field.label)}</label>
         ${control}
     </div>`;
+}
+
+export function showDialog({ html, labelId, onCancel }) {
+    const opener = document.activeElement;
+    const el     = mount(html, labelId);
+    const close  = () => unmount(el, opener);
+
+    active = { el, cancel: () => (onCancel ? onCancel(close) : close()) };
+    return { el, close };
 }
 
 export function openEditor({ title, fields, submitLabel = 'Save', onSubmit }) {
@@ -93,9 +100,7 @@ export function openEditor({ title, fields, submitLabel = 'Save', onSubmit }) {
         errorEl.textContent = '';
 
         const values = {};
-        for (const [key, raw] of new FormData(form)) {
-            values[key] = raw instanceof File ? (raw.size > 0 ? raw : null) : String(raw).trim();
-        }
+        for (const [key, raw] of new FormData(form)) values[key] = String(raw).trim();
 
         const missing = fields.find(f => f.required && !values[f.name]);
         if (missing) {

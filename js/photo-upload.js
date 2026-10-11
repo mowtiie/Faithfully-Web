@@ -80,7 +80,9 @@ function keyFromUrl(url) {
     return url.slice(PHOTO_BASE_URL.length + 1);
 }
 
-export async function uploadPhoto(file) {
+export async function uploadPhoto(file, onStep = () => {}) {
+    onStep('Resizing…');
+
     let source;
     try {
         source = await loadSource(file);
@@ -96,6 +98,7 @@ export async function uploadPhoto(file) {
     const storagePath   = `gallery/${name}`;
     const thumbnailPath = `gallery/thumbs/${name}`;
 
+    onStep('Uploading…');
     await callWorker('PUT', storagePath, full);
     try {
         await callWorker('PUT', thumbnailPath, thumb);

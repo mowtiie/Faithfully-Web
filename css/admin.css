@@ -157,3 +157,182 @@ textarea.editor-input {
 .admin-note[hidden] { display: none; }
 
 .app-card .admin-bar-card { margin: 0; }
+
+.photo-card { max-width: 600px; }
+
+.photo-drop {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 26px 16px;
+    text-align: center;
+    background: var(--surface);
+    border: 2px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.photo-drop:hover,
+.photo-drop:focus-within,
+.photo-drop.is-over {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.photo-drop.is-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.photo-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.photo-drop-icon { font-size: 34px; line-height: 1; }
+.photo-drop-text { font-size: 15px; }
+.photo-drop-text strong { color: var(--heading); }
+.photo-drop-hint { font-size: 12px; color: var(--text-muted); }
+
+.photo-list {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0 0;
+    padding: 0;
+    max-height: 46vh;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.photo-list:empty { display: none; }
+
+.photo-item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) 32px;
+    align-items: start;
+    gap: 12px;
+    padding: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: border-color 0.2s var(--ease);
+}
+
+.photo-item[data-state="error"] { border-color: var(--danger); }
+.photo-item[data-state="done"]  { border-color: var(--success); }
+
+.photo-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    background: var(--surface-sunken);
+    border-radius: var(--radius-sm);
+}
+
+.photo-thumb.is-broken { visibility: hidden; }
+
+.photo-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.photo-name {
+    overflow: hidden;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.photo-caption { padding: 8px 10px; font-size: 16px; }
+
+.photo-status {
+    min-height: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.photo-item[data-state="working"] .photo-status { color: var(--heading); }
+.photo-item[data-state="done"] .photo-status    { color: var(--success); }
+.photo-item[data-state="error"] .photo-status   { color: var(--danger); }
+
+.photo-item[data-state="working"] .photo-status::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: photoSpin 0.8s linear infinite;
+    vertical-align: -1px;
+}
+
+@keyframes photoSpin { to { transform: rotate(360deg); } }
+
+.photo-remove {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.photo-remove:hover:not(:disabled) {
+    background: var(--accent-soft);
+    color: var(--heading);
+}
+
+.photo-remove:disabled { opacity: 0.35; cursor: default; }
+
+.photo-remove:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.photo-progress {
+    height: 6px;
+    margin-top: 14px;
+    overflow: hidden;
+    background: var(--surface-sunken);
+    border-radius: var(--radius-pill);
+}
+
+.photo-progress[hidden] { display: none; }
+
+.photo-progress span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    border-radius: var(--radius-pill);
+    transition: width 0.3s var(--ease);
+}
+
+.photo-summary {
+    min-height: 20px;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--heading);
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .photo-item { grid-template-columns: 52px minmax(0, 1fr) 32px; gap: 10px; }
+    .photo-thumb { width: 52px; height: 52px; }
+}

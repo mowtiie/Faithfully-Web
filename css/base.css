@@ -30,6 +30,7 @@
     --navy:           #2f4a6b;
     --navy-soft:      rgba(47, 74, 107, 0.1);
     --danger:         #b3392b;
+    --success:        #3d7a37;
 
     --shadow-sm: 0 1px 2px rgba(90, 69, 21, 0.08), 0 2px 8px rgba(90, 69, 21, 0.06);
     --shadow-md: 0 2px 4px rgba(90, 69, 21, 0.06), 0 10px 28px rgba(90, 69, 21, 0.10);

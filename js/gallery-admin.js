@@ -3,6 +3,7 @@ import { db } from './firebase.js';
 import { getLightboxState, onLightboxRender } from './lightbox.js';
 import { openEditor, confirmDialog, nextOrder, reorder, attempt } from './admin.js';
 import { uploadPhoto, deletePhotoFiles, isHosted } from './photo-upload.js';
+import { openPhotoDialog } from './photo-dialog.js';
 
 function editCaption() {
     const { photos, index } = getLightboxState();
@@ -23,25 +24,22 @@ function movePhoto(step) {
     return attempt(() => reorder('gallery', photos, index, index + step), 'move the photo');
 }
 
-function addPhoto() {
-    openEditor({
-        title: 'Add a photo',
-        submitLabel: 'Add photo',
-        fields: [
-            { name: 'file', label: 'Photo', type: 'file', accept: 'image/*', required: true },
-            { name: 'caption', label: 'Caption', type: 'textarea', rows: 3 }
-        ],
-        onSubmit: async values => {
-            const files = await uploadPhoto(values.file);
-            const { photos } = getLightboxState();
+function addPhotos() {
+    let nextPosition = nextOrder(getLightboxState().photos);
+
+    openPhotoDialog({
+        save: async (file, caption, onStep) => {
+            const files = await uploadPhoto(file, onStep);
+            onStep('Saving…');
 
             try {
                 await db.collection('gallery').add({
                     ...files,
-                    caption: values.caption,
-                    order: nextOrder(photos),
+                    caption,
+                    order: nextPosition,
                     uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                nextPosition++;
             } catch (err) {
                 await deletePhotoFiles(files).catch(() => {});
                 throw err;
@@ -85,7 +83,7 @@ export function initGalleryAdmin() {
         later.disabled   = index === count - 1;
     });
 
-    addBtn.addEventListener('click', addPhoto);
+    addBtn.addEventListener('click', addPhotos);
     onAuthChange(() => { addBtn.hidden = !isAdmin; });
 
     bar.addEventListener('click', e => {
