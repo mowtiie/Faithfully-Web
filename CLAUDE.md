@@ -53,6 +53,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── lightbox.js        Photo viewer
 │   ├── admin.js           Shared editor, confirm and notice dialogs for the admin controls
 │   ├── letters-admin.js   Add/edit/delete/reorder chapters and letters (admin only)
+│   ├── apps-admin.js      Add/edit/delete/reorder apps and the one-time import of the built-in list (admin only)
 │   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
 │   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
 │   └── data/              mock.js (demo content), apps.js (app list)
@@ -102,6 +103,7 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 - **`gallery/`**: `{ imageUrl, thumbnailUrl, caption, order, uploadedAt, storagePath, thumbnailPath }`
 - **`settings/home`**: `{ title, subtitle, stickyTitle, countdownLabel, countdownFinish, anniversaryLabel, anniversaryUnit, countdownTarget (Timestamp), anniversaryStart (Timestamp) }` — `subtitle` may contain `<br>` for line breaks
 
+- **`apps/`**: `{ name, tagline, description, version, icon (emoji), iconImage (url), downloadUrl, sourceUrl, order }` — signed-in users read this; guests, and signed-in users while it is empty or unreadable, see the built-in list in `js/data/apps.js`. Links are plain text the admin pastes; APK and icon files are not uploaded from the site.
 - **`settings/draw`**: `{ players: { <uid>: emoji } }` — which emoji (🐝 / 🌻) belongs to which account; set by hand in the console
 - **`draw/board`**: `{ epoch, lastBy (uid or null), updatedAt }` — whose turn it is; `epoch` goes up when the paper is cleared
 - **`draw/board/turns/{id}`**: `{ uid, epoch, createdAt, strokes: [{ c, s, e, p: [x0, y0, x1, y1, …] }] }` — points are flat because Firestore rejects nested arrays; coordinates are 0–1
@@ -110,7 +112,7 @@ Rules restrict reads to approved UIDs and writes to admin only, except `draw/boa
 
 ## Companion Android app
 
-There's a separate repo `Faithfully-App` (Android admin app in Java). The admin account can also add, edit, delete and reorder chapters and letters directly on the website (`js/letters-admin.js`), writing the same `chapters` and `cards` fields the app does. Keep the two in sync if either changes the schema. The Draw board (`draw/*`) is written by the site only; the app never touches it. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
+There's a separate repo `Faithfully-App` (Android admin app in Java). The admin account can also add, edit, delete and reorder chapters, letters and apps directly on the website (`js/letters-admin.js`, `js/apps-admin.js`), writing the same `chapters` and `cards` fields the app does. The `apps` collection needs its own rule: read for approved UIDs, write for the admin. Keep the two in sync if either changes the schema. The Draw board (`draw/*`) is written by the site only; the app never touches it. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
 
 ## Things to be careful about
 

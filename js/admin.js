@@ -1,3 +1,4 @@
+import { db } from './firebase.js';
 import { lockScroll, unlockScroll, trapFocus, escapeHtml, escapeAttr } from './ui.js';
 
 let active = null;
@@ -148,4 +149,30 @@ export function confirmDialog({ title, text, confirmLabel = 'Delete', cancelLabe
 
 export function notice(title, text) {
     return confirmDialog({ title, text, confirmLabel: 'OK', cancelLabel: null, icon: '🌻', danger: false });
+}
+
+export function nextOrder(list) {
+    return list.reduce((max, item) => Math.max(max, item.order ?? -1), -1) + 1;
+}
+
+export async function reorder(collection, list, from, to) {
+    if (to < 0 || to >= list.length) return;
+
+    const next = list.slice();
+    next.splice(to, 0, next.splice(from, 1)[0]);
+
+    const batch = db.batch();
+    next.forEach((item, order) => {
+        if (item.order !== order) batch.update(db.collection(collection).doc(item.id), { order });
+    });
+    await batch.commit();
+}
+
+export async function attempt(action, what) {
+    try {
+        await action();
+    } catch (err) {
+        console.error(err);
+        await notice('Something went wrong', `Could not ${what}. Check your connection and try again.`);
+    }
 }

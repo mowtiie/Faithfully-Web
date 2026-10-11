@@ -1,12 +1,8 @@
 import { isAdmin, onAuthChange } from './auth.js';
 import { db } from './firebase.js';
 import { letterStore, chapterList } from './letter-store.js';
-import { openEditor, confirmDialog, notice } from './admin.js';
+import { openEditor, confirmDialog, notice, nextOrder, reorder, attempt } from './admin.js';
 import { escapeAttr } from './ui.js';
-
-function nextOrder(list) {
-    return list.reduce((max, item) => Math.max(max, item.order ?? -1), -1) + 1;
-}
 
 function pad(n) {
     return String(n).padStart(2, '0');
@@ -25,28 +21,6 @@ function parseInputDate(value) {
 
 function dateLabel(date) {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-async function reorder(collection, list, from, to) {
-    if (to < 0 || to >= list.length) return;
-
-    const next = list.slice();
-    next.splice(to, 0, next.splice(from, 1)[0]);
-
-    const batch = db.batch();
-    next.forEach((item, order) => {
-        if (item.order !== order) batch.update(db.collection(collection).doc(item.id), { order });
-    });
-    await batch.commit();
-}
-
-async function attempt(action, what) {
-    try {
-        await action();
-    } catch (err) {
-        console.error(err);
-        await notice('Something went wrong', `Could not ${what}. Check your connection and try again.`);
-    }
 }
 
 function barButton(admin, label, attrs = '', extra = '') {

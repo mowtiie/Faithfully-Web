@@ -140,3 +140,20 @@ textarea.editor-input {
 @media (max-width: 480px) {
     .admin-btn-danger { margin-left: 0; }
 }
+
+.admin-note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.admin-note[hidden] { display: none; }
+
+.app-card .admin-bar-card { margin: 0; }
