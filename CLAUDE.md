@@ -6,12 +6,13 @@
 
 ## What this project is
 
-A personal website built for someone specific (Alliyannah Faith / "Ali"). It has four sections:
+A personal website built for someone specific (Alliyannah Faith / "Ali"). It has five sections:
 
 - **Home** — birthday countdown + days-together counter
 - **Letters** — chapters of handwritten letters opened one at a time in a reader
 - **Apps** — showcase of Android apps the owner built for her (Faithful, Faithfully)
 - **Gallery** — cat photos with a lightbox viewer
+- **Draw** — a shared square paper the two of them draw on in turns (🐝 and 🌻)
 
 Hosted on GitHub Pages at `alliyannah.love`. Uses Firebase Firestore + Storage + Auth. No build step, no framework — vanilla HTML/CSS/JS.
 
@@ -26,14 +27,14 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 
 `authMode` is exported from `js/auth.js` and updated by `onAuthStateChanged`. Modules that depend on it register with `onAuthChange()` instead of being called by hand:
 - `js/home.js` — re-renders the hero text and refreshes the countdown and days-together counters
-- `js/router.js` — resets and reloads the active section if it is data-dependent (letters, gallery)
+- `js/router.js` — resets and reloads the active section if it is data-dependent (letters, gallery, draw)
 - `js/login.js` — updates the sign-in button icon and label
 
 ## File structure
 
 ```
 .
-├── index.html              Entry point — has all 4 sections + login overlay
+├── index.html              Entry point — has all 5 sections + login overlay
 ├── js/                     Native ES modules, loaded by js/main.js
 │   ├── main.js            Entry point — calls each module's init
 │   ├── firebase.js        Firebase init, db/auth handles, ALLOWED_UIDS
@@ -48,6 +49,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── apps.js            App showcase
 │   ├── gallery.js         Photo grid (Firestore or mock)
 │   ├── lightbox.js        Photo viewer
+│   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
 │   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
 │   └── data/              mock.js (demo content), apps.js (app list)
 ├── css/
@@ -58,6 +60,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── reader.css         Letter reader + print styles
 │   ├── apps.css           App showcase cards
 │   ├── gallery.css        Photo grid + lightbox
+│   ├── draw.css           Drawing paper, toolbar, ink palette (the one place with literal colours)
 │   ├── login.css          Login overlay
 │   ├── dialog.css         Sign-out dialog
 │   ├── demo.css           "SAMPLE" watermarks
@@ -94,11 +97,15 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 - **`gallery/`**: `{ imageUrl, thumbnailUrl, caption, order, uploadedAt, storagePath, thumbnailPath }`
 - **`settings/home`**: `{ title, subtitle, stickyTitle, countdownLabel, countdownFinish, anniversaryLabel, anniversaryUnit, countdownTarget (Timestamp), anniversaryStart (Timestamp) }` — `subtitle` may contain `<br>` for line breaks
 
-Rules restrict reads to approved UIDs and writes to admin only. Rules file is in the Firebase project, not this repo.
+- **`settings/draw`**: `{ players: { <uid>: emoji } }` — which emoji (🐝 / 🌻) belongs to which account; set by hand in the console
+- **`draw/board`**: `{ epoch, lastBy (uid or null), updatedAt }` — whose turn it is; `epoch` goes up when the paper is cleared
+- **`draw/board/turns/{id}`**: `{ uid, epoch, createdAt, strokes: [{ c, s, e, p: [x0, y0, x1, y1, …] }] }` — points are flat because Firestore rejects nested arrays; coordinates are 0–1
+
+Rules restrict reads to approved UIDs and writes to admin only, except `draw/board` and its `turns`, which either approved UID can write (a turn can't be created by whoever drew last). Rules file is in the Firebase project, not this repo; the draw rules are drafted in `.local/draw-setup.md`.
 
 ## Companion Android app
 
-There's a separate repo `Faithfully-App` (Android admin app in Java). That app is the only thing that writes to Firestore — this website only reads. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
+There's a separate repo `Faithfully-App` (Android admin app in Java). That app is the only thing that writes content to Firestore — this website only reads, except the Draw board (`draw/*`), which the site writes itself and the app never touches. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
 
 ## Things to be careful about
 

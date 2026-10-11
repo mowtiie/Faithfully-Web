@@ -1,13 +1,14 @@
 import { authReady, onAuthChange } from './auth.js';
 import { loadLetters } from './letters.js';
 import { loadGallery } from './gallery.js';
+import { loadDraw } from './draw.js';
 import { renderApps } from './apps.js';
 import { prefersReducedMotion } from './ui.js';
 
 const SECTION_NAMES = ['home', 'letters', 'apps', 'gallery', 'draw'];
 
-const loaders = { letters: loadLetters, gallery: loadGallery };
-const sectionLoaded = { home: true, letters: false, apps: false, gallery: false };
+const loaders = { letters: loadLetters, gallery: loadGallery, draw: loadDraw };
+const sectionLoaded = { home: true, letters: false, apps: false, gallery: false, draw: false };
 
 function switchSection(name) {
     if (location.hash === '#' + name) showSection(name);
@@ -47,6 +48,7 @@ function showSection(name) {
 function reloadAuthDependentSections() {
     sectionLoaded.letters = false;
     sectionLoaded.gallery = false;
+    sectionLoaded.draw    = false;
 
     const active = document.querySelector('.page-section.active');
     const name   = active && active.id.replace('section-', '');

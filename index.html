@@ -221,6 +221,10 @@
                 </header>
                 <div class="container">
                     <div class="draw-board">
+                        <p class="draw-status" aria-live="polite">
+                            <span class="draw-badge" id="drawBadge" role="img" hidden></span>
+                            <span id="drawStatusText"></span>
+                        </p>
                         <div class="draw-stage">
                             <canvas id="drawCanvas" role="img" aria-label="Drawing paper"></canvas>
                         </div>
@@ -242,6 +246,11 @@
                                 <button type="button" class="draw-tool" id="drawEraser" aria-pressed="false">Eraser</button>
                                 <button type="button" class="draw-tool" id="drawUndo" disabled>Undo</button>
                             </div>
+                        </div>
+                        <p class="draw-note" id="drawNote" role="status"></p>
+                        <div class="draw-actions">
+                            <button type="button" class="draw-tool" id="drawClear" data-armed="false">Clear paper</button>
+                            <button type="button" class="draw-done" id="drawDone" hidden disabled>Done ✓</button>
                         </div>
                     </div>
                 </div>
