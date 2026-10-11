@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/reader.css">
     <link rel="stylesheet" href="css/apps.css">
     <link rel="stylesheet" href="css/gallery.css">
+    <link rel="stylesheet" href="css/draw.css">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/dialog.css">
     <link rel="stylesheet" href="css/demo.css">
@@ -113,6 +114,10 @@
                     <span class="nav-icon">🐱</span>
                     <span class="nav-label">Gallery</span>
                 </button>
+                <button class="nav-btn" data-section="draw" title="Draw">
+                    <span class="nav-icon">🎨</span>
+                    <span class="nav-label">Draw</span>
+                </button>
             </nav>
             <button class="drawer-collapse-btn" id="drawerCollapseBtn" aria-label="Toggle sidebar">
                 <span class="drawer-collapse-icon">‹</span>
@@ -209,6 +214,39 @@
                 </div>
             </section>
 
+            <section class="page-section" id="section-draw">
+                <header class="section-header">
+                    <h2 class="section-title">🎨 Draw</h2>
+                    <p class="section-subtitle">A little paper for the two of us.</p>
+                </header>
+                <div class="container">
+                    <div class="draw-board">
+                        <div class="draw-stage">
+                            <canvas id="drawCanvas" role="img" aria-label="Drawing paper"></canvas>
+                        </div>
+                        <div class="draw-toolbar" role="toolbar" aria-label="Drawing tools">
+                            <div class="draw-group" role="group" aria-label="Colour">
+                                <button type="button" class="draw-swatch" data-ink="1" aria-label="Brown" aria-pressed="true"></button>
+                                <button type="button" class="draw-swatch" data-ink="2" aria-label="Honey" aria-pressed="false"></button>
+                                <button type="button" class="draw-swatch" data-ink="3" aria-label="Orange" aria-pressed="false"></button>
+                                <button type="button" class="draw-swatch" data-ink="4" aria-label="Rose" aria-pressed="false"></button>
+                                <button type="button" class="draw-swatch" data-ink="5" aria-label="Green" aria-pressed="false"></button>
+                                <button type="button" class="draw-swatch" data-ink="6" aria-label="Navy" aria-pressed="false"></button>
+                            </div>
+                            <div class="draw-group" role="group" aria-label="Brush size">
+                                <button type="button" class="draw-size" data-size="0" aria-label="Thin brush" aria-pressed="false"><span></span></button>
+                                <button type="button" class="draw-size" data-size="1" aria-label="Medium brush" aria-pressed="true"><span></span></button>
+                                <button type="button" class="draw-size" data-size="2" aria-label="Thick brush" aria-pressed="false"><span></span></button>
+                            </div>
+                            <div class="draw-group">
+                                <button type="button" class="draw-tool" id="drawEraser" aria-pressed="false">Eraser</button>
+                                <button type="button" class="draw-tool" id="drawUndo" disabled>Undo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -262,6 +300,10 @@
         <button class="nav-btn" data-section="gallery">
             <span class="nav-icon">🐱</span>
             <span class="nav-label">Gallery</span>
+        </button>
+        <button class="nav-btn" data-section="draw">
+            <span class="nav-icon">🎨</span>
+            <span class="nav-label">Draw</span>
         </button>
     </nav>
 

@@ -289,6 +289,17 @@ body.drawer-collapsed {
     opacity: 1;
 }
 
+@media (max-width: 400px) {
+    .bottom-nav { gap: 2px; }
+    .bottom-nav .nav-btn { min-width: 44px; padding: 0 10px; }
+}
+
+@media (max-width: 340px) {
+    .bottom-nav { max-width: calc(100% - 16px); padding: 4px; }
+    .bottom-nav .nav-btn { min-width: 36px; padding: 0 6px; }
+    .bottom-nav .nav-btn.active .nav-label { margin-left: 5px; font-size: 12px; }
+}
+
 .sticky-header {
     position: fixed;
     top: 0;

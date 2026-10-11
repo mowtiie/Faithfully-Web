@@ -4,7 +4,7 @@ import { loadGallery } from './gallery.js';
 import { renderApps } from './apps.js';
 import { prefersReducedMotion } from './ui.js';
 
-const SECTION_NAMES = ['home', 'letters', 'apps', 'gallery'];
+const SECTION_NAMES = ['home', 'letters', 'apps', 'gallery', 'draw'];
 
 const loaders = { letters: loadLetters, gallery: loadGallery };
 const sectionLoaded = { home: true, letters: false, apps: false, gallery: false };

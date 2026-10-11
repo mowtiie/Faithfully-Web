@@ -6,6 +6,7 @@ import { initLetters } from './letters.js';
 import { initReader } from './reader.js';
 import { initGallery } from './gallery.js';
 import { initLightbox } from './lightbox.js';
+import { initDraw } from './draw.js';
 import { initRouter } from './router.js';
 
 initFloatingHearts();
@@ -18,5 +19,6 @@ initLetters();
 initReader();
 initGallery();
 initLightbox();
+initDraw();
 initRouter();
 startAuth();

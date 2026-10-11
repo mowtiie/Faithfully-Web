@@ -1,0 +1,132 @@
+:root {
+    --ink-1: #3b2f0f;
+    --ink-2: #f2b705;
+    --ink-3: #e2812b;
+    --ink-4: #c8485c;
+    --ink-5: #4f8a4a;
+    --ink-6: #2f4a6b;
+    --paper: #fffdf5;
+}
+
+.draw-board {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.draw-stage {
+    aspect-ratio: 3 / 4;
+    background: var(--paper);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+#drawCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.draw-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 20px;
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.draw-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.draw-swatch,
+.draw-size,
+.draw-tool {
+    cursor: pointer;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.draw-swatch {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--surface-raised);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+.draw-swatch[data-ink="1"] { background: var(--ink-1); }
+.draw-swatch[data-ink="2"] { background: var(--ink-2); }
+.draw-swatch[data-ink="3"] { background: var(--ink-3); }
+.draw-swatch[data-ink="4"] { background: var(--ink-4); }
+.draw-swatch[data-ink="5"] { background: var(--ink-5); }
+.draw-swatch[data-ink="6"] { background: var(--ink-6); }
+
+.draw-swatch[aria-pressed="true"] {
+    box-shadow: 0 0 0 3px var(--accent);
+    transform: scale(1.1);
+}
+
+.draw-size {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: transparent;
+}
+
+.draw-size span {
+    display: block;
+    border-radius: 50%;
+    background: var(--text);
+}
+
+.draw-size[data-size="0"] span { width: 5px;  height: 5px; }
+.draw-size[data-size="1"] span { width: 10px; height: 10px; }
+.draw-size[data-size="2"] span { width: 18px; height: 18px; }
+
+.draw-size[aria-pressed="true"] {
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.draw-tool {
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.draw-tool[aria-pressed="true"] {
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    color: var(--heading);
+}
+
+.draw-tool:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.draw-swatch:focus-visible,
+.draw-size:focus-visible,
+.draw-tool:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
