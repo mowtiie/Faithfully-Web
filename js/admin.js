@@ -21,7 +21,7 @@ function bindKeys() {
 function mount(html, labelId) {
     bindKeys();
     const el = document.createElement('div');
-    el.className = 'dialog active';
+    el.className = 'dialog dialog-admin active';
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-modal', 'true');
     el.setAttribute('aria-labelledby', labelId);
@@ -158,14 +158,31 @@ export function nextOrder(list) {
 export async function reorder(collection, list, from, to) {
     if (to < 0 || to >= list.length) return;
 
+    const ref  = item => db.collection(collection).doc(item.id);
+    const a    = list[from];
+    const b    = list[to];
+
+    if (Math.abs(from - to) === 1 && Number.isFinite(a.order) && Number.isFinite(b.order) && a.order !== b.order) {
+        const batch = db.batch();
+        batch.update(ref(a), { order: b.order });
+        batch.update(ref(b), { order: a.order });
+        await batch.commit();
+        return;
+    }
+
     const next = list.slice();
     next.splice(to, 0, next.splice(from, 1)[0]);
 
-    const batch = db.batch();
+    const changes = [];
     next.forEach((item, order) => {
-        if (item.order !== order) batch.update(db.collection(collection).doc(item.id), { order });
+        if (item.order !== order) changes.push([item, order]);
     });
-    await batch.commit();
+
+    for (let i = 0; i < changes.length; i += 400) {
+        const batch = db.batch();
+        changes.slice(i, i + 400).forEach(([item, order]) => batch.update(ref(item), { order }));
+        await batch.commit();
+    }
 }
 
 export async function attempt(action, what) {

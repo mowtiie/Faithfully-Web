@@ -195,3 +195,21 @@
     .lightbox-prev { left: 8px; }
     .lightbox-next { right: 8px; }
 }
+
+.lightbox-admin {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.lightbox-admin[hidden] { display: none; }
+
+.lightbox-admin .admin-btn {
+    border-color: rgba(253, 246, 227, 0.35);
+    color: var(--on-scrim);
+}
+
+.lightbox-admin .admin-btn:hover:not(:disabled) { background: rgba(253, 246, 227, 0.16); }
+
+.lightbox.has-admin .lightbox-img { max-height: 64vh; }

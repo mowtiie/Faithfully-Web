@@ -82,3 +82,5 @@
 }
 
 .dialog-btn-secondary:hover { background: var(--accent-soft); }
+
+.dialog-admin { z-index: 3100; }

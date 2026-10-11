@@ -54,6 +54,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── admin.js           Shared editor, confirm and notice dialogs for the admin controls
 │   ├── letters-admin.js   Add/edit/delete/reorder chapters and letters (admin only)
 │   ├── apps-admin.js      Add/edit/delete/reorder apps and the one-time import of the built-in list (admin only)
+│   ├── gallery-admin.js   Edit caption and move photos earlier/later, inside the lightbox (admin only)
 │   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
 │   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
 │   └── data/              mock.js (demo content), apps.js (app list)

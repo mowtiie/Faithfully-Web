@@ -8,6 +8,7 @@ import { initReader } from './reader.js';
 import { initAppsAdmin } from './apps-admin.js';
 import { initGallery } from './gallery.js';
 import { initLightbox } from './lightbox.js';
+import { initGalleryAdmin } from './gallery-admin.js';
 import { initDraw } from './draw.js';
 import { initRouter } from './router.js';
 
@@ -23,6 +24,7 @@ initReader();
 initAppsAdmin();
 initGallery();
 initLightbox();
+initGalleryAdmin();
 initDraw();
 initRouter();
 startAuth();

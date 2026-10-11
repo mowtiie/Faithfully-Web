@@ -2,8 +2,18 @@ import { lockScroll, unlockScroll, trapFocus } from './ui.js';
 
 let photos = [];
 let index  = 0;
+const renderListeners = [];
+
+export function onLightboxRender(listener) {
+    renderListeners.push(listener);
+}
+
+export function getLightboxState() {
+    return { photos, index };
+}
 
 export function setLightboxPhotos(list) {
+    const currentId = photos[index] && photos[index].id;
     photos = list;
 
     const lightbox = document.getElementById('lightbox');
@@ -13,7 +23,9 @@ export function setLightboxPhotos(list) {
         closeLightbox();
         return;
     }
-    index = Math.min(index, photos.length - 1);
+
+    const moved = currentId != null ? photos.findIndex(p => p.id === currentId) : -1;
+    index = moved >= 0 ? moved : Math.min(index, photos.length - 1);
     renderLightbox();
 }
 
@@ -35,10 +47,12 @@ function renderLightbox() {
     const img     = document.getElementById('lightboxImg');
     const caption = document.getElementById('lightboxCaption');
 
-    img.classList.add('is-loading');
-    img.onload  = () => img.classList.remove('is-loading');
-    img.onerror = () => img.classList.remove('is-loading');
-    img.src = photo.imageUrl;
+    if (img.getAttribute('src') !== photo.imageUrl) {
+        img.classList.add('is-loading');
+        img.onload  = () => img.classList.remove('is-loading');
+        img.onerror = () => img.classList.remove('is-loading');
+        img.src = photo.imageUrl;
+    }
     img.alt = photo.caption || 'Cat photo';
 
     caption.textContent   = photo.caption || '';
@@ -54,6 +68,8 @@ function renderLightbox() {
         const neighbour = photos[(index + step + photos.length) % photos.length];
         if (neighbour && neighbour.imageUrl) new Image().src = neighbour.imageUrl;
     });
+
+    renderListeners.forEach(listener => listener({ index, count: photos.length }));
 }
 
 function lightboxPrev() {
@@ -89,6 +105,7 @@ export function initLightbox() {
 
     document.addEventListener('keydown', e => {
         if (!lightbox.classList.contains('active')) return;
+        if (document.querySelector('.dialog-admin')) return;
         if (e.key === 'Escape')     closeLightbox();
         if (e.key === 'ArrowLeft')  lightboxPrev();
         if (e.key === 'ArrowRight') lightboxNext();
