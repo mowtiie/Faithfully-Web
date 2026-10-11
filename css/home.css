@@ -191,6 +191,13 @@
     animation: pulse 2s ease-in-out infinite;
 }
 
+@media (max-width: 600px) {
+    .home-hero { padding: 72px 20px 24px; }
+    .home-hero h1 { margin-bottom: 12px; }
+    .anniversary-wrapper { padding: 24px 20px; }
+    .anniversary-number { font-size: 84px; }
+}
+
 @media (max-width: 380px) {
     .countdown-sep { display: none; }
 }

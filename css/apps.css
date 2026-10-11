@@ -147,4 +147,5 @@
     .app-icon     { width: 60px; height: 60px; border-radius: 16px; }
     .app-icon-emoji { font-size: 30px; }
     .app-name     { font-size: 21px; }
+    .app-description { font-size: 15px; line-height: 1.7; }
 }
