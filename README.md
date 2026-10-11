@@ -4,7 +4,7 @@
 
 ### *A quiet place for letters, memories, and a countdown to her birthday.*
 
-A personal website I built for someone special — handwritten letters organized into chapters, a real-time backend, a gallery of cat photos, an app showcase, and a companion Android admin app. Fully private for her, with a friendly demo mode for everyone else.
+A personal website I built for someone special — handwritten letters organized into chapters, a real-time backend, a gallery of cat photos, an app showcase, a shared drawing board for the two of us, and a companion Android admin app. Fully private for her, with a friendly demo mode for everyone else.
 
 **[🌐 Live site](https://alliyannah.love)** · **[📱 Android companion app](https://github.com/mowtiie/Faithfully-App)**
 
@@ -45,15 +45,23 @@ What began as a single static page turned into a full system: chapters of letter
 - 📸 Optimized images — small thumbnails for the grid, full-res in the lightbox
 - ↗️ Captions that fade in on hover, always visible on touch devices
 
+### 🎨 Draw
+- 🖍 A shared square paper the two of us draw on, one turn at a time
+- 🐝🌻 A badge shows who drew last, and the toolbar is only active on your turn
+- 🎨 Six sunflower colours, three brush sizes, an eraser, undo, and a two-tap "clear paper"
+- ✋ Pointer events, so mouse, finger and stylus all work, and the drawing redraws crisply at any screen size
+- 🔒 Turn order is enforced by the Firestore security rules, not just the page
+- 👀 In demo mode it's a local-only sketchpad
+
 ### 🔐 Auth & Demo mode
-- 🔑 Email/password sign-in for Ali; her account is the only one that unlocks the real content
+- 🔑 Email/password sign-in with a show/hide eye toggle; only the two allow-listed accounts unlock the real content
 - 👀 Demo mode for everyone else — the site auto-shows placeholder chapters, sample letters, and free stock cat photos so portfolio visitors can see the layout without seeing anything personal
 - 🏷️ Every sample card and photo gets a subtle "SAMPLE" watermark
 - 🌗 Session persists forever — Ali only signs in once per device
 
 ### 🧰 Under the hood
-- ⚡ Real-time updates via Firestore — letters and photos appear instantly after the admin app adds them
-- 📱 Collapsible side drawer on desktop, bottom nav on mobile — same components, fully responsive
+- ⚡ Real-time updates via Firestore — letters and photos appear instantly after the admin app adds them, and drawings appear on the other device as soon as a turn is sent
+- 📱 Collapsible side drawer on desktop, a floating pill nav on mobile — same components, fully responsive
 - ☁️ Firebase Storage for photo hosting with public CDN delivery
 - 🔒 Two-layer security — client-side auth UI + Firestore security rules that require an allow-listed UID
 
@@ -61,9 +69,15 @@ What began as a single static page turned into a full system: chapters of letter
 
 ## 📸 Screenshots
 
-| Home | Dark mode | Sign in | Apps |
+All shown in demo mode, with sample content.
+
+| Home | Dark mode | Letters | Gallery |
 |:---:|:---:|:---:|:---:|
-| ![Home](screenshots/screenshot_1.png) | ![Dark mode](screenshots/screenshot_2.png) | ![Sign in](screenshots/screenshot_3.png) | ![Apps](screenshots/screenshot_4.png) |
+| ![Home](screenshots/screenshot_1.png) | ![Dark mode](screenshots/screenshot_2.png) | ![Letters](screenshots/screenshot_3.png) | ![Gallery](screenshots/screenshot_4.png) |
+
+| Apps | Draw | Sign in |
+|:---:|:---:|:---:|
+| ![Apps](screenshots/screenshot_5.png) | ![Draw](screenshots/screenshot_6.png) | ![Sign in](screenshots/screenshot_7.png) |
 
 ---
 
@@ -101,6 +115,7 @@ What began as a single static page turned into a full system: chapters of letter
              │     - cards/                   │
              │     - gallery/                 │
              │     - settings/                │
+             │     - draw/ (both can write)   │
              │   • Storage                    │
              │     - gallery/*.jpg            │
              │   • Auth                       │
@@ -108,7 +123,7 @@ What began as a single static page turned into a full system: chapters of letter
              └────────────────────────────────┘
 ```
 
-The Android app is the only thing that can *write*. Reads are restricted to approved UIDs by Firestore security rules; everyone else sees placeholder data from `js/data/mock.js` and never hits Firestore.
+The Android app is the only thing that can write letters, chapters, gallery photos and settings. The one exception is the Draw board, which either approved account can write to, with the turn order enforced in the rules. Reads are restricted to approved UIDs by Firestore security rules; everyone else sees placeholder data from `js/data/mock.js` and never hits Firestore.
 
 ---
 
