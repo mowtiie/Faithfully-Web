@@ -32,9 +32,7 @@ function closeLogin() {
 
 function setPasswordVisible(visible) {
     document.getElementById('loginPassword').type = visible ? 'text' : 'password';
-    const reveal = document.getElementById('loginReveal');
-    reveal.textContent = visible ? 'Hide' : 'Show';
-    reveal.setAttribute('aria-pressed', String(visible));
+    document.getElementById('loginReveal').setAttribute('aria-pressed', String(visible));
 }
 
 function openSignOutDialog() {

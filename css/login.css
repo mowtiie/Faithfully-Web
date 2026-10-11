@@ -110,25 +110,35 @@
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-.login-field .login-input { padding-right: 76px; }
+.login-field .login-input { padding-right: 56px; }
 
 .login-reveal {
     position: absolute;
     top: 50%;
-    right: 8px;
+    right: 6px;
     transform: translateY(-50%);
-    padding: 6px 12px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
     border: none;
-    border-radius: var(--radius-pill);
+    border-radius: 50%;
     background: transparent;
     color: var(--navy);
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
     cursor: pointer;
 }
 
 .login-reveal:hover { background: var(--navy-soft); }
+
+.login-reveal:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.login-reveal .eye-off,
+.login-reveal[aria-pressed="true"] .eye-open { display: none; }
+
+.login-reveal[aria-pressed="true"] .eye-off { display: block; }
 
 .login-error {
     min-height: 18px;
