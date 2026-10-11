@@ -9,12 +9,16 @@
 }
 
 .draw-board {
+    width: 100%;
     max-width: 520px;
+    min-width: 0;
     margin: 0 auto;
 }
 
 .draw-stage {
-    aspect-ratio: 3 / 4;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
     background: var(--paper);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-md);
@@ -23,7 +27,8 @@
 }
 
 #drawCanvas {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     touch-action: none;
