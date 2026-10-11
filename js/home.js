@@ -18,6 +18,10 @@ let settings = null;
 let settingsResolved = false;
 let settingsUnsub = null;
 
+export function getHomeState() {
+    return { settings, defaults: HOME_MOCK };
+}
+
 function homeContent() {
     const content = { ...HOME_MOCK };
     if (authMode === 'authed' && settings) {

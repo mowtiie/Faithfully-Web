@@ -2,22 +2,8 @@ import { isAdmin, onAuthChange } from './auth.js';
 import { db } from './firebase.js';
 import { letterStore, chapterList } from './letter-store.js';
 import { openEditor, confirmDialog, notice, nextOrder, reorder, attempt } from './admin.js';
+import { toDateInput, parseDateInput } from './date-fields.js';
 import { escapeAttr } from './ui.js';
-
-function pad(n) {
-    return String(n).padStart(2, '0');
-}
-
-function toInputDate(value) {
-    if (!value || typeof value.toDate !== 'function') return '';
-    const d = value.toDate();
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-
-function parseInputDate(value) {
-    const [y, m, d] = value.split('-').map(Number);
-    return new Date(y, m - 1, d, 12);
-}
 
 function dateLabel(date) {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -105,14 +91,14 @@ function cardFields(card, chapterId) {
             name: 'chapterId', label: 'Chapter', type: 'select', required: true, value: chapterId,
             options: chapterList.map(c => ({ value: c.id, label: c.title }))
         },
-        { name: 'date', label: 'Date', type: 'date', value: toInputDate(card.date) },
+        { name: 'date', label: 'Date', type: 'date', value: toDateInput(card.date) },
         { name: 'dateLabel', label: 'Date label', placeholder: 'Shown on the card. Leave blank to use the date.', value: card.dateLabel },
         { name: 'message', label: 'Letter', type: 'textarea', rows: 10, required: true, value: card.message }
     ];
 }
 
 function cardData(values) {
-    const date = values.date ? parseInputDate(values.date) : null;
+    const date = values.date ? parseDateInput(values.date) : null;
     return {
         title: values.title,
         message: values.message,

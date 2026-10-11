@@ -336,3 +336,14 @@ textarea.editor-input {
     .photo-item { grid-template-columns: 52px minmax(0, 1fr) 32px; gap: 10px; }
     .photo-thumb { width: 52px; height: 52px; }
 }
+
+.anniversary-wrapper > .card-edit,
+.countdown-wrapper > .card-edit {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 12px;
+}
