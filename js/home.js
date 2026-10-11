@@ -28,18 +28,22 @@ function homeContent() {
     return content;
 }
 
+function toDate(value) {
+    if (!value) return null;
+    const date = typeof value.toDate === 'function' ? value.toDate() : new Date(value);
+    return isNaN(date) ? null : date;
+}
+
 function getCountdownTarget() {
-    if (authMode === 'authed' && settings && settings.countdownTarget) {
-        return settings.countdownTarget.toDate();
-    }
+    const target = authMode === 'authed' && settings && toDate(settings.countdownTarget);
+    if (target) return target;
+
     const now = new Date();
     return new Date(now.getFullYear() + 1, 11, 31, 0, 0, 0);
 }
 
 function getAnniversaryStart() {
-    if (authMode === 'authed' && settings && settings.anniversaryStart) {
-        return settings.anniversaryStart.toDate();
-    }
+    if (authMode === 'authed') return toDate(settings && settings.anniversaryStart);
 
     let stored = localStorage.getItem('demoFirstVisit');
     if (!stored) {
@@ -98,9 +102,15 @@ function countdownTick() {
 }
 
 function anniversaryTick() {
-    const diff = new Date() - getAnniversaryStart();
-    document.getElementById('anniversaryDays').textContent =
-        diff < 0 ? '0' : Math.floor(diff / DAY_MS);
+    const start = getAnniversaryStart();
+    const days  = document.getElementById('anniversaryDays');
+    if (!start) {
+        days.textContent = '--';
+        return;
+    }
+
+    const diff = new Date() - start;
+    days.textContent = diff < 0 ? '0' : Math.floor(diff / DAY_MS);
 }
 
 function refreshHome() {
@@ -120,6 +130,9 @@ function watchSettings(mode) {
     if (mode === 'authed') {
         settingsUnsub = db.collection('settings').doc('home').onSnapshot(doc => {
             settings = doc.exists ? doc.data() : null;
+            if (!settings || !toDate(settings.anniversaryStart)) {
+                console.warn('settings/home has no usable anniversaryStart');
+            }
             settingsResolved = true;
             refreshHome();
         }, err => {
