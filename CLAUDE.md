@@ -98,7 +98,7 @@ Rules restrict reads to approved UIDs and writes to admin only. Rules file is in
 
 ## Companion Android app
 
-There's a separate repo `Faithfully-App` (Android admin app in Java). That app is the only thing that writes to Firestore — this website only reads. If you're changing the schema here, remember it also needs to change there.
+There's a separate repo `Faithfully-App` (Android admin app in Java). That app is the only thing that writes to Firestore — this website only reads. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
 
 ## Things to be careful about
 
