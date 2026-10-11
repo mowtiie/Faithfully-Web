@@ -25,6 +25,8 @@ Two-mode auth with a UID allow list:
 
 The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID is NOT on the list gets silently signed out and treated as a guest.
 
+`isAdmin` (also exported from `js/auth.js`) is true only for `ADMIN_UID` in `js/firebase.js`. It only decides whether the inline add/edit/delete buttons render; the Firestore rules are what actually allow the writes, so never rely on it for security.
+
 `authMode` is exported from `js/auth.js` and updated by `onAuthStateChanged`. Modules that depend on it register with `onAuthChange()` instead of being called by hand:
 - `js/home.js` — re-renders the hero text and refreshes the countdown and days-together counters
 - `js/router.js` — resets and reloads the active section if it is data-dependent (letters, gallery, draw)
@@ -49,6 +51,8 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── apps.js            App showcase
 │   ├── gallery.js         Photo grid (Firestore or mock)
 │   ├── lightbox.js        Photo viewer
+│   ├── admin.js           Shared editor, confirm and notice dialogs for the admin controls
+│   ├── letters-admin.js   Add/edit/delete/reorder chapters and letters (admin only)
 │   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
 │   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
 │   └── data/              mock.js (demo content), apps.js (app list)
@@ -60,6 +64,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── reader.css         Letter reader + print styles
 │   ├── apps.css           App showcase cards
 │   ├── gallery.css        Photo grid + lightbox
+│   ├── admin.css          Admin buttons and the editor/confirm dialogs
 │   ├── draw.css           Drawing paper, toolbar, ink palette (the one place with literal colours)
 │   ├── login.css          Login overlay
 │   ├── dialog.css         Sign-out dialog
@@ -105,7 +110,7 @@ Rules restrict reads to approved UIDs and writes to admin only, except `draw/boa
 
 ## Companion Android app
 
-There's a separate repo `Faithfully-App` (Android admin app in Java). That app is the only thing that writes content to Firestore — this website only reads, except the Draw board (`draw/*`), which the site writes itself and the app never touches. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
+There's a separate repo `Faithfully-App` (Android admin app in Java). The admin account can also add, edit, delete and reorder chapters and letters directly on the website (`js/letters-admin.js`), writing the same `chapters` and `cards` fields the app does. Keep the two in sync if either changes the schema. The Draw board (`draw/*`) is written by the site only; the app never touches it. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
 
 ## Things to be careful about
 

@@ -1,7 +1,8 @@
-import { auth, ALLOWED_UIDS } from './firebase.js';
+import { auth, ALLOWED_UIDS, ADMIN_UID } from './firebase.js';
 
 export let authMode  = 'guest';
 export let authReady = false;
+export let isAdmin   = false;
 
 const listeners = [];
 
@@ -22,6 +23,8 @@ export function startAuth() {
                 auth.signOut();
             }
         }
+
+        isAdmin = authMode === 'authed' && user.uid === ADMIN_UID;
 
         document.body.classList.toggle('demo-mode', authMode === 'guest');
         listeners.forEach(listener => listener(authMode));

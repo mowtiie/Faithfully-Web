@@ -1,7 +1,8 @@
-import { authMode } from './auth.js';
+import { authMode, isAdmin } from './auth.js';
 import { db } from './firebase.js';
 import { MOCK_CHAPTERS, MOCK_CARDS } from './data/mock.js';
-import { letterStore, chapterMeta, chapterEyebrow } from './letter-store.js';
+import { letterStore, chapterMeta, chapterList, chapterEyebrow } from './letter-store.js';
+import { chapterBarHtml, itemBarHtml } from './letters-admin.js';
 import { openLetter, refreshReader } from './reader.js';
 import { escapeHtml, escapeAttr } from './ui.js';
 
@@ -36,6 +37,8 @@ function stopLetterListeners() {
 export function loadLetters() {
     stopLetterListeners();
 
+    chapterList.length = 0;
+
     if (authMode === 'guest') {
         renderLettersFromData(MOCK_CHAPTERS, MOCK_CARDS);
         return;
@@ -49,6 +52,8 @@ export function loadLetters() {
         .onSnapshot(chaptersSnap => {
             stopCardListeners();
 
+            chapterList.length = 0;
+
             if (chaptersSnap.empty) {
                 container.innerHTML = '<div class="empty-state">No chapters yet.</div>';
                 return;
@@ -56,6 +61,7 @@ export function loadLetters() {
 
             const chapters = [];
             chaptersSnap.forEach(doc => chapters.push({ id: doc.id, ...doc.data() }));
+            chapterList.push(...chapters);
 
             container.innerHTML = '';
 
@@ -121,6 +127,7 @@ function buildChapterElement(chapter, number) {
         ${chapter.description
             ? `<p class="chapter-description">${escapeHtml(chapter.description)}</p>`
             : ''}
+        ${isAdmin ? chapterBarHtml(chapter.id, number - 1, chapterList.length) : ''}
         <div class="cards-grid chapter-cards" id="${escapeAttr(gridId)}">
             <div class="skeleton skeleton-card"></div>
         </div>
@@ -146,16 +153,20 @@ function renderChapterCards(grid, cards, chapterId) {
     if (cards.length === 0) {
         grid.innerHTML = '<div class="empty-state small">No letters in this chapter yet.</div>';
     } else {
-        grid.innerHTML = cards.map((card, index) => `
-            <button type="button" class="letter-card"
-                    data-chapter="${escapeAttr(chapterId)}" data-index="${index}"
-                    style="animation-delay:${index * 0.06}s">
-                ${card.dateLabel ? `<span class="letter-date">${escapeHtml(card.dateLabel)}</span>` : ''}
-                <span class="letter-title">${escapeHtml(card.title)}</span>
-                <span class="letter-excerpt">${escapeHtml(letterExcerpt(card.message))}</span>
-                <span class="letter-more">Read letter <span aria-hidden="true">→</span></span>
-            </button>
-        `).join('');
+        grid.innerHTML = cards.map((card, index) => {
+            const button = `
+                <button type="button" class="letter-card"
+                        data-chapter="${escapeAttr(chapterId)}" data-index="${index}"
+                        style="animation-delay:${index * 0.06}s">
+                    ${card.dateLabel ? `<span class="letter-date">${escapeHtml(card.dateLabel)}</span>` : ''}
+                    <span class="letter-title">${escapeHtml(card.title)}</span>
+                    <span class="letter-excerpt">${escapeHtml(letterExcerpt(card.message))}</span>
+                    <span class="letter-more">Read letter <span aria-hidden="true">→</span></span>
+                </button>`;
+            return isAdmin
+                ? `<div class="letter-item">${button}${itemBarHtml(chapterId, index, cards.length)}</div>`
+                : button;
+        }).join('');
     }
 
     refreshReader(chapterId);

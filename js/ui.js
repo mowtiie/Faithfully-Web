@@ -11,7 +11,7 @@ export function unlockScroll() {
 
 export function trapFocus(container, e) {
     if (e.key !== 'Tab') return;
-    const focusable = [...container.querySelectorAll('button:not([disabled]), a[href], input, [tabindex]:not([tabindex="-1"])')]
+    const focusable = [...container.querySelectorAll('button:not([disabled]), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
         .filter(el => el.getClientRects().length > 0);
     if (focusable.length === 0) return;
 
