@@ -59,6 +59,8 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── gallery-admin.js   Add photo, edit caption, move earlier/later and delete, inside the gallery and lightbox (admin only)
 │   ├── photo-dialog.js    The Add photos dialog: choose or drop several photos, captions, per-photo progress and retry
 │   ├── photo-upload.js    Shrinks a photo to a full image and a thumbnail and uploads/deletes them through the Cloudflare Worker
+│   ├── backup.js          Backup/restore logic: zip export, validation, merge or replace restore (same format as the Android app)
+│   ├── backup-admin.js    The Backup & restore button on Home and its dialog (admin only)
 │   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
 │   ├── ui.js              Focus trap, scroll lock, escapeHtml/escapeAttr
 │   └── data/              mock.js (demo content), apps.js (app list)

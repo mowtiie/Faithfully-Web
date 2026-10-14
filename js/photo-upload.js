@@ -94,14 +94,18 @@ export async function uploadPhoto(file, onStep = () => {}) {
     const thumb = await toJpeg(source, THUMB_SIDE, 0.8);
     if (source.close) source.close();
 
+    onStep('Uploading…');
+    return uploadPhotoBlobs(full, thumb);
+}
+
+export async function uploadPhotoBlobs(full, thumb) {
     const name       = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`;
     const storagePath   = `gallery/${name}`;
     const thumbnailPath = `gallery/thumbs/${name}`;
 
-    onStep('Uploading…');
     await callWorker('PUT', storagePath, full);
     try {
-        await callWorker('PUT', thumbnailPath, thumb);
+        await callWorker('PUT', thumbnailPath, thumb || full);
     } catch (err) {
         await callWorker('DELETE', storagePath).catch(() => {});
         throw err;
@@ -115,7 +119,14 @@ export async function uploadPhoto(file, onStep = () => {}) {
     };
 }
 
+export function photoKeys(photo) {
+    return [photo.imageUrl, photo.thumbnailUrl].filter(isHosted).map(keyFromUrl);
+}
+
 export async function deletePhotoFiles(photo) {
-    const keys = new Set([photo.imageUrl, photo.thumbnailUrl].filter(isHosted).map(keyFromUrl));
+    for (const key of new Set(photoKeys(photo))) await callWorker('DELETE', key);
+}
+
+export async function deletePhotoKeys(keys) {
     for (const key of keys) await callWorker('DELETE', key);
 }
