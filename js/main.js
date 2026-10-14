@@ -1,6 +1,6 @@
 import { startAuth } from './auth.js';
 import { initLogin } from './login.js';
-import { initFloatingHearts, initThemeToggle, initDrawerCollapse, initStickyHeader } from './shell.js';
+import { initFloatingHearts, initThemeToggle, initDrawerCollapse, initBottomNavScroll } from './shell.js';
 import { initHome } from './home.js';
 import { initHomeAdmin } from './home-admin.js';
 import { initLetters } from './letters.js';
@@ -16,7 +16,7 @@ import { initRouter } from './router.js';
 initFloatingHearts();
 initThemeToggle();
 initDrawerCollapse();
-initStickyHeader();
+initBottomNavScroll();
 initLogin();
 initHome();
 initHomeAdmin();

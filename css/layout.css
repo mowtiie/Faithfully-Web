@@ -243,6 +243,13 @@ body.drawer-collapsed {
     border-radius: var(--radius-pill);
     box-shadow: var(--shadow-md);
     z-index: 1000;
+    transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+}
+
+.bottom-nav.scrolling {
+    transform: translate(-50%, calc(100% + 24px));
+    opacity: 0;
+    pointer-events: none;
 }
 
 @supports (backdrop-filter: blur(1px)) {
@@ -298,55 +305,6 @@ body.drawer-collapsed {
     .bottom-nav { max-width: calc(100% - 16px); padding: 4px; }
     .bottom-nav .nav-btn { min-width: 36px; padding: 0 6px; }
     .bottom-nav .nav-btn.active .nav-label { margin-left: 5px; font-size: 12px; }
-}
-
-.sticky-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;
-    padding: 0 110px 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-    transform: translateY(-110%);
-    pointer-events: none;
-    transition: transform 0.4s var(--ease), left 0.3s var(--ease);
-    z-index: 99;
-}
-
-.sticky-header.visible {
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-.sticky-title {
-    font-family: var(--font-hand);
-    font-size: 30px;
-    color: var(--hand);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (min-width: 769px) {
-    .sticky-header {
-        left: var(--drawer-w);
-        padding: 0 120px;
-        justify-content: center;
-    }
-    .sticky-title { font-size: 34px; }
-}
-
-@supports (backdrop-filter: blur(1px)) {
-    .sticky-header {
-        background: color-mix(in srgb, var(--surface) 88%, transparent);
-        backdrop-filter: blur(14px);
-    }
 }
 
 .top-controls {

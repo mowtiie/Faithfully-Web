@@ -56,9 +56,13 @@ export function initDrawerCollapse() {
     });
 }
 
-export function initStickyHeader() {
-    const header = document.getElementById('stickyHeader');
+export function initBottomNavScroll() {
+    const nav = document.querySelector('.bottom-nav');
+    if (!nav) return;
+    let timer;
     window.addEventListener('scroll', () => {
-        header.classList.toggle('visible', window.scrollY > 100);
-    });
+        nav.classList.add('scrolling');
+        clearTimeout(timer);
+        timer = setTimeout(() => nav.classList.remove('scrolling'), 200);
+    }, { passive: true });
 }

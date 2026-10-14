@@ -4,7 +4,6 @@ import { db } from './firebase.js';
 const HOME_MOCK = {
     title:            "To Someone Special.",
     subtitle:         "A quiet place made just for you — letters, memories, and countdowns for the moments ahead. 🌻",
-    stickyTitle:      "For Someone Special",
     countdownLabel:   "Counting down to something wonderful 🎂",
     countdownFinish:  "Something wonderful is here! 🎉",
     anniversaryLabel: "Days on this journey 💛",
@@ -72,7 +71,6 @@ function renderHomeContent() {
 
     document.getElementById('homeTitle').textContent         = c.title;
     setMultiline(document.getElementById('homeSubtitle'), c.subtitle);
-    document.getElementById('stickyTitle').textContent       = c.stickyTitle;
     document.getElementById('countdownLabel').textContent    = c.countdownLabel;
     document.getElementById('countdownBirthday').textContent = c.countdownFinish;
     document.getElementById('anniversaryLabel').textContent  = c.anniversaryLabel;

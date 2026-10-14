@@ -204,14 +204,12 @@
 
 .home-hero h1,
 .home-hero .subtitle,
-.home-stats,
-.sticky-title {
+.home-stats {
     transition: opacity 0.5s var(--ease);
 }
 
 body.home-pending .home-hero h1,
 body.home-pending .home-hero .subtitle,
-body.home-pending .home-stats,
-body.home-pending .sticky-title {
+body.home-pending .home-stats {
     opacity: 0;
 }

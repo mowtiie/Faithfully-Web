@@ -43,7 +43,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── auth.js            authMode/authReady, onAuthChange(), signIn/signOut
 │   ├── login.js           Login overlay + sign-out dialog
 │   ├── router.js          Hash routing, lazy section loading
-│   ├── shell.js           Theme toggle, drawer collapse, sticky header, floating flowers
+│   ├── shell.js           Theme toggle, drawer collapse, bottom nav hide on scroll, floating flowers
 │   ├── home.js            Hero content, countdown, days together
 │   ├── letters.js         Chapters + letter cards (Firestore or mock)
 │   ├── reader.js          Letter reader (progress, swipe, print, next chapter)
@@ -64,7 +64,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   └── data/              mock.js (demo content), apps.js (app list)
 ├── css/
 │   ├── base.css           Reset, CSS variables, shared animations
-│   ├── layout.css         App shell, drawer, bottom nav, sticky header
+│   ├── layout.css         App shell, drawer, bottom nav
 │   ├── home.css           Home page (header, countdowns, floating background)
 │   ├── letters.css        Chapters + card styling
 │   ├── reader.css         Letter reader + print styles
@@ -106,7 +106,7 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 - **`chapters/`**: `{ title, description, order }`
 - **`cards/`**: `{ title, message, dateLabel, date (Timestamp), order, chapterId }`
 - **`gallery/`**: `{ imageUrl, thumbnailUrl, caption, order, uploadedAt, storagePath, thumbnailPath }`
-- **`settings/home`** (the counter and countdown fields are editable from the Home page by the admin; clearing a text field deletes it so the built-in text returns): `{ title, subtitle, stickyTitle, countdownLabel, countdownFinish, anniversaryLabel, anniversaryUnit, countdownTarget (Timestamp), anniversaryStart (Timestamp) }` — `subtitle` may contain `<br>` for line breaks
+- **`settings/home`** (the counter and countdown fields are editable from the Home page by the admin; clearing a text field deletes it so the built-in text returns): `{ title, subtitle, countdownLabel, countdownFinish, anniversaryLabel, anniversaryUnit, countdownTarget (Timestamp), anniversaryStart (Timestamp) }` — `subtitle` may contain `<br>` for line breaks
 
   Photos added from the website are stored in Cloudflare R2, not Firebase Storage: `imageUrl` / `thumbnailUrl` are `PHOTO_BASE_URL` (an `r2.dev` address in `js/firebase.js`) plus `gallery/<name>.jpg` and `gallery/thumbs/<name>.jpg`, and `storagePath` / `thumbnailPath` hold those keys. Uploads and deletes go through the Worker at `UPLOAD_WORKER_URL`, which only accepts the admin's Firebase login token. Older photos still point at Firebase Storage until the migration runs; deleting one of those from the site removes only the Firestore entry. The Worker source and its tests live in `.local/worker/` (untracked).
 - **`apps/`**: `{ name, tagline, description, version, icon (emoji), iconImage (url), downloadUrl, sourceUrl, order }` — signed-in users read this; guests, and signed-in users while it is empty or unreadable, see the built-in list in `js/data/apps.js`. Links are plain text the admin pastes; APK and icon files are not uploaded from the site.
