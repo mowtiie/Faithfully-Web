@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/apps.css">
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/draw.css">
+    <link rel="stylesheet" href="css/voice.css">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/dialog.css">
     <link rel="stylesheet" href="css/admin.css">
@@ -123,6 +124,10 @@
                 <button class="nav-btn" data-section="draw" title="Draw">
                     <span class="nav-icon">🎨</span>
                     <span class="nav-label">Draw</span>
+                </button>
+                <button class="nav-btn" data-section="voice" title="Voice">
+                    <span class="nav-icon">🎙️</span>
+                    <span class="nav-label">Voice</span>
                 </button>
             </nav>
             <button class="drawer-collapse-btn" id="drawerCollapseBtn" aria-label="Toggle sidebar">
@@ -280,6 +285,21 @@
                 </div>
             </section>
 
+            <section class="page-section" id="section-voice">
+                <header class="section-header">
+                    <h2 class="section-title">🎙️ Voice</h2>
+                    <p class="section-subtitle">Little messages, in our own voices.</p>
+                </header>
+                <div class="container">
+                    <div class="admin-row">
+                        <button type="button" class="admin-btn admin-btn-primary" id="recordVoiceBtn" hidden>🎙️ Record</button>
+                    </div>
+                    <ul class="voice-list" id="voiceList">
+                        <li class="voice-empty">Loading recordings… 🎙️</li>
+                    </ul>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -323,6 +343,17 @@
         </div>
     </div>
 
+    <div class="more-sheet" id="moreSheet" hidden>
+        <button class="nav-btn" data-section="apps">
+            <span class="nav-icon">📱</span>
+            <span class="nav-label">Apps</span>
+        </button>
+        <button class="nav-btn" data-section="voice">
+            <span class="nav-icon">🎙️</span>
+            <span class="nav-label">Voice</span>
+        </button>
+    </div>
+
     <nav class="bottom-nav">
         <button class="nav-btn active" data-section="home">
             <span class="nav-icon">🏠</span>
@@ -332,10 +363,6 @@
             <span class="nav-icon">💌</span>
             <span class="nav-label">Letters</span>
         </button>
-        <button class="nav-btn" data-section="apps">
-            <span class="nav-icon">📱</span>
-            <span class="nav-label">Apps</span>
-        </button>
         <button class="nav-btn" data-section="gallery">
             <span class="nav-icon">🐱</span>
             <span class="nav-label">Gallery</span>
@@ -343,6 +370,10 @@
         <button class="nav-btn" data-section="draw">
             <span class="nav-icon">🎨</span>
             <span class="nav-label">Draw</span>
+        </button>
+        <button class="nav-btn" id="moreBtn" data-sections="apps voice" aria-haspopup="true" aria-expanded="false" aria-controls="moreSheet">
+            <span class="nav-icon">⋯</span>
+            <span class="nav-label">More</span>
         </button>
     </nav>
 

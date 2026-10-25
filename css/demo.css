@@ -17,6 +17,23 @@ body.demo-mode .reader-paper::after {
     pointer-events: none;
 }
 
+body.demo-mode .voice-clip::after {
+    content: 'SAMPLE';
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--heading);
+    background: var(--accent-soft);
+    border: 1px solid var(--border-strong);
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    pointer-events: none;
+}
+
 body.demo-mode .reader-paper::after {
     top: 16px;
     right: auto;

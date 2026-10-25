@@ -30,6 +30,14 @@ export const MOCK_CARDS = [
       message: 'Not every letter is meant to be exciting — some are just gentle reminders that someone is thinking of you. This is a placeholder version of one of those. 🌻' }
 ];
 
+export const MOCK_VOICE_PLAYERS = { 'mock-a': '🐝', 'mock-b': '🌻' };
+
+export const MOCK_VOICE = [
+    { id: 'mock-v-1', uid: 'mock-a', caption: 'A sample good morning', duration: 12, audioPath: null },
+    { id: 'mock-v-2', uid: 'mock-b', caption: 'Another sample, just to show the layout', duration: 27, audioPath: null },
+    { id: 'mock-v-3', uid: 'mock-a', caption: 'Real recordings are only for the two of us 🌻', duration: 8, audioPath: null }
+];
+
 export const MOCK_GALLERY = [
     { id: 'mock-g-1', order: 0, caption: 'Sample photo 🐱',
       imageUrl:     'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200',

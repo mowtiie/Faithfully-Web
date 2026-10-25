@@ -6,13 +6,14 @@
 
 ## What this project is
 
-A personal website built for someone specific (Alliyannah Faith / "Ali"). It has five sections:
+A personal website built for someone specific (Alliyannah Faith / "Ali"). It has six sections:
 
 - **Home** — birthday countdown + days-together counter
 - **Letters** — chapters of handwritten letters opened one at a time in a reader
 - **Apps** — showcase of Android apps the owner built for her (Faithful, Faithfully)
 - **Gallery** — cat photos with a lightbox viewer
 - **Draw** — a shared square paper the two of them draw on in turns (🐝 and 🌻)
+- **Voice** — short voice messages either of them can record, listed with captions; playback is gated (fetched through the Worker with the login token, never a public URL)
 
 Hosted on GitHub Pages at `alliyannah.love`. Uses Firebase Firestore + Storage + Auth. No build step, no framework — vanilla HTML/CSS/JS.
 
@@ -29,7 +30,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 
 `authMode` is exported from `js/auth.js` and updated by `onAuthStateChanged`. Modules that depend on it register with `onAuthChange()` instead of being called by hand:
 - `js/home.js` — re-renders the hero text and refreshes the countdown and days-together counters
-- `js/router.js` — resets and reloads the active section if it is data-dependent (letters, gallery, draw)
+- `js/router.js` — resets and reloads the active section if it is data-dependent (letters, apps, gallery, draw, voice)
 - `js/login.js` — updates the sign-in button icon and label
 
 ## File structure
@@ -43,7 +44,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── auth.js            authMode/authReady, onAuthChange(), signIn/signOut
 │   ├── login.js           Login overlay + sign-out dialog
 │   ├── router.js          Hash routing, lazy section loading
-│   ├── shell.js           Theme toggle, drawer collapse, bottom nav hide on scroll, floating flowers
+│   ├── shell.js           Theme toggle, drawer collapse, mobile More sheet (Apps, Voice), bottom nav hide on scroll, floating flowers
 │   ├── home.js            Hero content, countdown, days together
 │   ├── letters.js         Chapters + letter cards (Firestore or mock)
 │   ├── reader.js          Letter reader (progress, swipe, print, next chapter)
@@ -59,6 +60,10 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── gallery-admin.js   Add photo, edit caption, move earlier/later and delete, inside the gallery and lightbox (admin only)
 │   ├── photo-dialog.js    The Add photos dialog: choose or drop several photos, captions, per-photo progress and retry
 │   ├── photo-upload.js    Shrinks a photo to a full image and a thumbnail and uploads/deletes them through the Cloudflare Worker
+│   ├── worker-client.js   Authenticated calls to the Cloudflare Worker (PUT/GET/DELETE with the Firebase ID token), shared by photos, voice and backup
+│   ├── voice.js           Voice section: live list, one shared audio player (gated blob playback), progress bar, saving a recording
+│   ├── voice-recorder.js  The record dialog: MediaRecorder, preview, caption, retry
+│   ├── voice-admin.js     Edit caption and delete recordings (admin only)
 │   ├── backup.js          Backup/restore logic: zip export, validation, merge or replace restore (same format as the Android app)
 │   ├── backup-admin.js    The Backup & restore button on Home and its dialog (admin only)
 │   ├── draw.js            Drawing canvas, turn order, shared board (Firestore) or local-only for guests
@@ -74,6 +79,7 @@ The allow list is `ALLOWED_UIDS` in `js/firebase.js`. A signed-in user whose UID
 │   ├── gallery.css        Photo grid + lightbox
 │   ├── admin.css          Admin buttons and the editor/confirm dialogs
 │   ├── draw.css           Drawing paper, toolbar, ink palette (the one place with literal colours)
+│   ├── voice.css          Recording cards, progress bar, record dialog
 │   ├── login.css          Login overlay
 │   ├── dialog.css         Sign-out dialog
 │   ├── demo.css           "SAMPLE" watermarks
@@ -112,6 +118,7 @@ Colors, typography, and radii live in `css/base.css` as CSS variables. Every sty
 
   Photos added from the website are stored in Cloudflare R2, not Firebase Storage: `imageUrl` / `thumbnailUrl` are `PHOTO_BASE_URL` (an `r2.dev` address in `js/firebase.js`) plus `gallery/<name>.jpg` and `gallery/thumbs/<name>.jpg`, and `storagePath` / `thumbnailPath` hold those keys. Uploads and deletes go through the Worker at `UPLOAD_WORKER_URL`, which only accepts the admin's Firebase login token. Older photos still point at Firebase Storage until the migration runs; deleting one of those from the site removes only the Firestore entry. The Worker source and its tests live in `.local/worker/` (untracked).
 - **`apps/`**: `{ name, tagline, description, version, icon (emoji), iconImage (url), downloadUrl, sourceUrl, order }` — signed-in users read this; guests, and signed-in users while it is empty or unreadable, see the built-in list in `js/data/apps.js`. Links are plain text the admin pastes; APK and icon files are not uploaded from the site.
+- **`voice/`**: `{ audioPath, caption, duration (seconds), mimeType, size (bytes), uid, createdAt (server timestamp) }` — `audioPath` is `voice/<uid>/<name>.<webm|m4a|mp4|ogg>` in a **private** R2 bucket (`faithfully-voice`, bound to the Worker as `VOICE_BUCKET`, no public address). Either approved account creates its own clips (Firestore rule: `uid == auth.uid`, path under its own folder; Worker: same folder rule, max 2 MB, audio magic bytes checked). Edit caption and delete are admin-only; the admin may also write any clip (needed for backup restore). Playback: the site GETs the file through the Worker with the login token and plays a blob URL. Sender is shown with the emoji from `settings/draw.players`. Drafted rules in `.local/voice-setup.md`.
 - **`settings/draw`**: `{ players: { <uid>: emoji } }` — which emoji (🐝 / 🌻) belongs to which account; set by hand in the console
 - **`draw/board`**: `{ epoch, lastBy (uid or null), updatedAt }` — whose turn it is; `epoch` goes up when the paper is cleared
 - **`draw/board/turns/{id}`**: `{ uid, epoch, createdAt, strokes: [{ c, s, e, p: [x0, y0, x1, y1, …] }] }` — points are flat because Firestore rejects nested arrays; coordinates are 0–1
@@ -120,7 +127,7 @@ Rules restrict reads to approved UIDs and writes to admin only, except `draw/boa
 
 ## Companion Android app
 
-There's a separate repo `Faithfully-App` (Android admin app in Java). The admin account can also add, edit, delete and reorder chapters, letters and apps directly on the website (`js/letters-admin.js`, `js/apps-admin.js`), writing the same `chapters` and `cards` fields the app does. The `apps` collection needs its own rule: read for approved UIDs, write for the admin. Keep the two in sync if either changes the schema. The Draw board (`draw/*`) is written by the site only; the app never touches it. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
+There's a separate repo `Faithfully-App` (Android admin app in Java). The admin account can also add, edit, delete and reorder chapters, letters and apps directly on the website (`js/letters-admin.js`, `js/apps-admin.js`), writing the same `chapters` and `cards` fields the app does. The `apps` collection needs its own rule: read for approved UIDs, write for the admin. Keep the two in sync if either changes the schema. The Draw board (`draw/*`) is written by the site only; the app never touches it. Voice clips (`voice/*` plus the files behind the Worker) are meant to be supported by the app too (record as AAC `.m4a`, PUT/GET with the Firebase ID token), and the shared backup zip now carries a `voice` list plus an `audio/` folder (`_zipAudio` per entry), so the app's backup/restore must learn them; until then it ignores both. If you're changing the schema here, remember it also needs to change there. The app's checkout is at `C:\Users\Mowtiie\AndroidStudioProjects\Faithfully-App`; start Claude with `--add-dir` pointing at it to change both together. Its upload, delete and backup/restore code all touch photo storage, so a storage change here needs matching app changes (migration to Cloudflare R2 is planned).
 
 ## Things to be careful about
 

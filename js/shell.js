@@ -56,6 +56,32 @@ export function initDrawerCollapse() {
     });
 }
 
+export function initMoreMenu() {
+    const button = document.getElementById('moreBtn');
+    const sheet  = document.getElementById('moreSheet');
+    if (!button || !sheet) return;
+
+    function setOpen(open, restoreFocus = false) {
+        sheet.hidden = !open;
+        button.setAttribute('aria-expanded', String(open));
+        if (open) sheet.querySelector('.nav-btn').focus();
+        else if (restoreFocus) button.focus();
+    }
+
+    button.addEventListener('click', () => setOpen(sheet.hidden));
+    sheet.addEventListener('click', () => setOpen(false));
+
+    document.addEventListener('click', e => {
+        if (!sheet.hidden && !sheet.contains(e.target) && !button.contains(e.target)) setOpen(false);
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !sheet.hidden) setOpen(false, true);
+    });
+
+    window.addEventListener('scroll', () => { if (!sheet.hidden) setOpen(false); }, { passive: true });
+}
+
 export function initBottomNavScroll() {
     const nav = document.querySelector('.bottom-nav');
     if (!nav) return;

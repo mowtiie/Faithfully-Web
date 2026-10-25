@@ -1,6 +1,6 @@
 import { startAuth } from './auth.js';
 import { initLogin } from './login.js';
-import { initFloatingHearts, initThemeToggle, initDrawerCollapse, initBottomNavScroll } from './shell.js';
+import { initFloatingHearts, initThemeToggle, initDrawerCollapse, initBottomNavScroll, initMoreMenu } from './shell.js';
 import { initHome } from './home.js';
 import { initHomeAdmin } from './home-admin.js';
 import { initBackupAdmin } from './backup-admin.js';
@@ -12,6 +12,8 @@ import { initGallery } from './gallery.js';
 import { initLightbox } from './lightbox.js';
 import { initGalleryAdmin } from './gallery-admin.js';
 import { initDraw } from './draw.js';
+import { initVoice } from './voice.js';
+import { initVoiceAdmin } from './voice-admin.js';
 import { initRouter } from './router.js';
 
 initFloatingHearts();
@@ -30,5 +32,8 @@ initGallery();
 initLightbox();
 initGalleryAdmin();
 initDraw();
+initVoice();
+initVoiceAdmin();
+initMoreMenu();
 initRouter();
 startAuth();

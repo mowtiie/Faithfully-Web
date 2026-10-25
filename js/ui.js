@@ -30,6 +30,11 @@ export function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+export function formatClock(seconds) {
+    const total = Math.max(0, Math.floor(seconds || 0));
+    return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
 export function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');

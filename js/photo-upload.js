@@ -1,14 +1,10 @@
-import { auth, UPLOAD_WORKER_URL, PHOTO_BASE_URL } from './firebase.js';
+import { PHOTO_BASE_URL } from './firebase.js';
+import { callWorker as callWorkerWith, fail } from './worker-client.js';
 
 const FULL_SIDE  = 2000;
 const THUMB_SIDE = 600;
 
-function fail(message, cause) {
-    const err = new Error(message);
-    err.userMessage = message;
-    err.cause = cause;
-    return err;
-}
+const callWorker = (method, key, body) => callWorkerWith(method, key, body, 'image/jpeg');
 
 async function loadSource(file) {
     if (window.createImageBitmap) {
@@ -40,36 +36,6 @@ function toJpeg(source, maxSide, quality) {
     return new Promise((resolve, reject) => {
         canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('encode_failed')), 'image/jpeg', quality);
     });
-}
-
-function describe(status, code) {
-    if (status === 401 || status === 403) return 'The upload service refused your sign-in. Sign out, sign back in, and try again.';
-    if (status === 413) return 'That image is too large.';
-    if (status === 415) return 'That image format is not supported.';
-    return `The upload service returned an error${code ? ` (${code})` : ''}. Try again.`;
-}
-
-async function callWorker(method, key, body) {
-    const user = auth.currentUser;
-    if (!user) throw fail('You are signed out. Sign in and try again.');
-
-    let res;
-    try {
-        const token = await user.getIdToken();
-        res = await fetch(`${UPLOAD_WORKER_URL}/${key}`, {
-            method,
-            headers: { Authorization: `Bearer ${token}`, ...(body ? { 'Content-Type': 'image/jpeg' } : {}) },
-            body
-        });
-    } catch (err) {
-        throw fail('Could not reach the upload service. Check your connection and try again.', err);
-    }
-
-    if (!res.ok) {
-        let code = '';
-        try { code = (await res.json()).error; } catch {}
-        throw fail(describe(res.status, code));
-    }
 }
 
 export function isHosted(url) {
