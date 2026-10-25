@@ -294,6 +294,15 @@
                     <div class="admin-row">
                         <button type="button" class="admin-btn admin-btn-primary" id="recordVoiceBtn" hidden>🎙️ Record</button>
                     </div>
+                    <div class="voice-tools" id="voiceTools" hidden>
+                        <div class="voice-chips" id="voiceChips" role="group" aria-label="Filter by sender"></div>
+                        <select class="voice-sort" id="voiceSort" aria-label="Sort recordings">
+                            <option value="newest">Newest first</option>
+                            <option value="oldest">Oldest first</option>
+                            <option value="longest">Longest first</option>
+                            <option value="shortest">Shortest first</option>
+                        </select>
+                    </div>
                     <ul class="voice-list" id="voiceList">
                         <li class="voice-empty">Loading recordings… 🎙️</li>
                     </ul>

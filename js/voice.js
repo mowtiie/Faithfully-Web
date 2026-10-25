@@ -19,6 +19,25 @@ let players       = {};
 let clipsLoaded   = false;
 let current       = null;
 let loadToken     = 0;
+let filterUid     = 'all';
+let sortKey       = 'newest';
+
+const SORTS = {
+    newest:   (a, b) => compare(createdMillis(b), createdMillis(a)),
+    oldest:   (a, b) => compare(createdMillis(a), createdMillis(b)),
+    longest:  (a, b) => compare(b.duration || 0, a.duration || 0),
+    shortest: (a, b) => compare(a.duration || 0, b.duration || 0)
+};
+
+function compare(a, b) {
+    return a < b ? -1 : a > b ? 1 : 0;
+}
+
+// A clip still waiting for its server timestamp is the newest one; sample clips have no date and keep their order.
+function createdMillis(clip) {
+    if (clip.createdAt && typeof clip.createdAt.toMillis === 'function') return clip.createdAt.toMillis();
+    return authMode === 'guest' ? 0 : Infinity;
+}
 
 export function getClips() {
     return clips;
@@ -167,17 +186,53 @@ function seek(id, event) {
     syncCurrent();
 }
 
+function senders() {
+    const known = Object.keys(players);
+    const order = uid => (known.includes(uid) ? known.indexOf(uid) : known.length);
+    return [...new Set(clips.map(c => c.uid))].sort((a, b) => order(a) - order(b));
+}
+
+function visibleClips() {
+    return clips.filter(c => filterUid === 'all' || c.uid === filterUid).sort(SORTS[sortKey]);
+}
+
+function renderTools() {
+    const tools  = document.getElementById('voiceTools');
+    const chips  = document.getElementById('voiceChips');
+    const uids   = senders();
+
+    if (filterUid !== 'all' && !uids.includes(filterUid)) filterUid = 'all';
+
+    tools.hidden = clips.length < 2;
+    chips.hidden = uids.length < 2;
+    document.getElementById('voiceSort').value = sortKey;
+
+    const chip = (uid, label, count, name) => `<button type="button" class="voice-chip" data-uid="${escapeAttr(uid)}"
+        aria-pressed="${filterUid === uid}" aria-label="${escapeAttr(name)}, ${count}">${escapeHtml(label)} <span class="voice-chip-count">${count}</span></button>`;
+
+    chips.innerHTML = chip('all', 'All', clips.length, 'All recordings')
+        + uids.map(uid => chip(uid, emojiFor(uid), clips.filter(c => c.uid === uid).length, `Sent by ${emojiFor(uid)}`)).join('');
+}
+
 function renderClips() {
     const container = list();
 
     if (current && !clips.some(c => c.id === current.id)) stopPlayback();
+
+    renderTools();
 
     if (clips.length === 0) {
         container.innerHTML = '<li class="voice-empty">No recordings yet. Tap Record to say something. 🎙️</li>';
         return;
     }
 
-    container.innerHTML = clips.map(clipHtml).join('');
+    const visible = visibleClips();
+    if (visible.length === 0) {
+        container.innerHTML = '<li class="voice-empty">Nothing from this sender yet. 🎙️</li>';
+        return;
+    }
+
+    container.innerHTML = visible.map(clipHtml).join('');
     syncAll();
 }
 
@@ -190,6 +245,7 @@ export function loadVoice() {
 
     stopPlayback();
     releaseBlobs();
+    filterUid = 'all';
 
     if (authMode === 'guest') {
         clips   = MOCK_VOICE;
@@ -250,6 +306,20 @@ export function initVoice() {
 
     recordBtn.addEventListener('click', () => openRecorder({ save: saveVoice }));
     onAuthChange(() => { recordBtn.hidden = authMode !== 'authed'; });
+
+    document.getElementById('voiceChips').addEventListener('click', e => {
+        const chip = e.target.closest('.voice-chip');
+        if (!chip || chip.dataset.uid === filterUid) return;
+        filterUid = chip.dataset.uid;
+        renderClips();
+        document.querySelector(`#voiceChips .voice-chip[data-uid="${CSS.escape(filterUid)}"]`)?.focus();
+    });
+
+    document.getElementById('voiceSort').addEventListener('change', e => {
+        if (!SORTS[e.target.value]) return;
+        sortKey = e.target.value;
+        renderClips();
+    });
 
     container.addEventListener('click', e => {
         const row = e.target.closest('.voice-clip');
