@@ -1,5 +1,5 @@
 import { authMode, isAdmin, onAuthChange } from './auth.js';
-import { auth, db } from './firebase.js';
+import { auth, db, ALLOWED_UIDS } from './firebase.js';
 import { MOCK_VOICE, MOCK_VOICE_PLAYERS } from './data/mock.js';
 import { callWorker, fail } from './worker-client.js';
 import { openRecorder } from './voice-recorder.js';
@@ -186,10 +186,16 @@ function seek(id, event) {
     syncCurrent();
 }
 
+// Both accounts always get a chip, even before they have sent anything.
 function senders() {
-    const known = Object.keys(players);
-    const order = uid => (known.includes(uid) ? known.indexOf(uid) : known.length);
-    return [...new Set(clips.map(c => c.uid))].sort((a, b) => order(a) - order(b));
+    const accounts = authMode === 'guest' ? [] : [...ALLOWED_UIDS];
+    return [...new Set([...Object.keys(players), ...accounts, ...clips.map(c => c.uid)])].filter(Boolean);
+}
+
+function chipLabel(uid) {
+    if (players[uid]) return players[uid];
+    if (authMode === 'guest') return UNKNOWN_EMOJI;
+    return auth.currentUser && auth.currentUser.uid === uid ? 'Me' : 'Them';
 }
 
 function visibleClips() {
@@ -203,7 +209,7 @@ function renderTools() {
 
     if (filterUid !== 'all' && !uids.includes(filterUid)) filterUid = 'all';
 
-    tools.hidden = clips.length < 2;
+    tools.hidden = false;
     chips.hidden = uids.length < 2;
     document.getElementById('voiceSort').value = sortKey;
 
@@ -211,7 +217,7 @@ function renderTools() {
         aria-pressed="${filterUid === uid}" aria-label="${escapeAttr(name)}, ${count}">${escapeHtml(label)} <span class="voice-chip-count">${count}</span></button>`;
 
     chips.innerHTML = chip('all', 'All', clips.length, 'All recordings')
-        + uids.map(uid => chip(uid, emojiFor(uid), clips.filter(c => c.uid === uid).length, `Sent by ${emojiFor(uid)}`)).join('');
+        + uids.map(uid => chip(uid, chipLabel(uid), clips.filter(c => c.uid === uid).length, `Sent by ${chipLabel(uid)}`)).join('');
 }
 
 function renderClips() {
