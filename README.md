@@ -4,7 +4,7 @@
 
 ### *A quiet place for letters, memories, and a countdown to her birthday.*
 
-A personal website I built for someone special — handwritten letters organized into chapters, a real-time backend, a gallery of cat photos, an app showcase, a shared drawing board for the two of us, and a companion Android admin app. Fully private for her, with a friendly demo mode for everyone else.
+A personal website I built for someone special — handwritten letters organized into chapters, a real-time backend, a gallery of cat photos, an app showcase, a shared drawing board for the two of us, little voice messages we can leave each other, and a companion Android admin app. Fully private for her, with a friendly demo mode for everyone else.
 
 **[🌐 Live site](https://alliyannah.love)** · **[📱 Android companion app](https://github.com/mowtiie/Faithfully-App)**
 
@@ -53,6 +53,15 @@ What began as a single static page turned into a full system: chapters of letter
 - 🔒 Turn order is enforced by the Firestore security rules, not just the page
 - 👀 In demo mode it's a local-only sketchpad
 
+### 🎙️ Voice
+- 🎤 Record a short voice message (up to 90 seconds) right in the browser, preview it, add a caption, and send
+- 🐝🌻 Every message shows who sent it
+- ▶️ A play/pause button and a simple progress bar you can tap to seek; only one message plays at a time
+- 🔒 Recordings are private: they sit in a bucket with no public address and only play for the two signed-in accounts
+- ✍️ Either of us can record; only the admin can edit a caption or delete a message
+- 🧳 Included in the admin's backup and restore
+- 👀 In demo mode you see sample cards with playback turned off
+
 ### 🔐 Auth & Demo mode
 - 🔑 Email/password sign-in with a show/hide eye toggle; only the two allow-listed accounts unlock the real content
 - 👀 Demo mode for everyone else — the site auto-shows placeholder chapters, sample letters, and free stock cat photos so portfolio visitors can see the layout without seeing anything personal
@@ -61,8 +70,8 @@ What began as a single static page turned into a full system: chapters of letter
 
 ### 🧰 Under the hood
 - ⚡ Real-time updates via Firestore — letters and photos appear instantly after the admin app adds them, and drawings appear on the other device as soon as a turn is sent
-- 📱 Collapsible side drawer on desktop, a floating pill nav on mobile — same components, fully responsive
-- ☁️ Firebase Storage for photo hosting with public CDN delivery
+- 📱 Collapsible side drawer on desktop, a floating pill nav on mobile with a "More" sheet for the extra sections — same components, fully responsive
+- ☁️ Photos and voice clips live in Cloudflare R2, reached through a small Worker that only accepts a valid Firebase login (voice clips in a private bucket, photos with public delivery)
 - 🔒 Two-layer security — client-side auth UI + Firestore security rules that require an allow-listed UID
 
 ---
@@ -75,9 +84,9 @@ All shown in demo mode, with sample content.
 |:---:|:---:|:---:|:---:|
 | ![Home](screenshots/screenshot_1.png) | ![Dark mode](screenshots/screenshot_2.png) | ![Letters](screenshots/screenshot_3.png) | ![Gallery](screenshots/screenshot_4.png) |
 
-| Apps | Draw | Sign in |
-|:---:|:---:|:---:|
-| ![Apps](screenshots/screenshot_5.png) | ![Draw](screenshots/screenshot_6.png) | ![Sign in](screenshots/screenshot_7.png) |
+| Apps | Draw | Voice | Sign in |
+|:---:|:---:|:---:|:---:|
+| ![Apps](screenshots/screenshot_5.png) | ![Draw](screenshots/screenshot_6.png) | ![Voice](screenshots/screenshot_8.png) | ![Sign in](screenshots/screenshot_7.png) |
 
 ---
 
@@ -87,7 +96,7 @@ All shown in demo mode, with sample content.
 |---|---|
 | **Frontend** | Vanilla HTML, CSS, JavaScript — no frameworks, no build step |
 | **Database** | [Firebase Firestore](https://firebase.google.com/docs/firestore) (real-time NoSQL) |
-| **File storage** | [Firebase Storage](https://firebase.google.com/docs/storage) (photo CDN) |
+| **File storage** | [Cloudflare R2](https://developers.cloudflare.com/r2/) behind a [Worker](https://developers.cloudflare.com/workers/) for photos and voice clips (older photos still on [Firebase Storage](https://firebase.google.com/docs/storage)) |
 | **Auth** | [Firebase Auth](https://firebase.google.com/docs/auth) — email/password, UID-restricted reads AND writes |
 | **Hosting** | [GitHub Pages](https://pages.github.com/) with free HTTPS |
 | **Fonts** | Google Fonts — *Playfair Display*, *Mrs Saint Delafield*, *Inter* |
@@ -116,6 +125,7 @@ All shown in demo mode, with sample content.
              │     - gallery/                 │
              │     - settings/                │
              │     - draw/ (both can write)   │
+             │     - voice/ (both can add)    │
              │   • Storage                    │
              │     - gallery/*.jpg            │
              │   • Auth                       │
@@ -123,7 +133,9 @@ All shown in demo mode, with sample content.
              └────────────────────────────────┘
 ```
 
-The Android app is the only thing that can write letters, chapters, gallery photos and settings. The one exception is the Draw board, which either approved account can write to, with the turn order enforced in the rules. Reads are restricted to approved UIDs by Firestore security rules; everyone else sees placeholder data from `js/data/mock.js` and never hits Firestore.
+Only the admin account (from the Android app or the site itself) can write letters, chapters, gallery photos and settings. The exceptions are the Draw board, which either approved account can write to with the turn order enforced in the rules, and voice clips, which either account can add for itself. Reads are restricted to approved UIDs by Firestore security rules; everyone else sees placeholder data from `js/data/mock.js` and never hits Firestore.
+
+Voice audio never goes through Firestore. The file is stored in a private Cloudflare R2 bucket, and only the Worker can reach it. The Worker checks the Firebase login on every request (either account can upload to its own folder and play, only the admin can delete), and the site plays each clip from a temporary in-browser copy rather than a shareable link.
 
 ---
 
