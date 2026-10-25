@@ -1,10 +1,13 @@
 import { db } from './firebase.js';
 import { uploadPhotoBlobs, photoKeys, deletePhotoKeys } from './photo-upload.js';
+import { callWorker } from './worker-client.js';
 
-const COLLECTIONS = ['chapters', 'cards', 'gallery', 'apps'];
+const COLLECTIONS = ['chapters', 'cards', 'gallery', 'apps', 'voice'];
 const SETTINGS_ID = 'home';
 const VERSION = 1;
 const IMAGES_DIR = 'images/';
+const AUDIO_DIR = 'audio/';
+const AUDIO_TYPES = { webm: 'audio/webm', m4a: 'audio/mp4', mp4: 'audio/mp4', ogg: 'audio/ogg' };
 const TIMESTAMP_FIELDS = new Set(['date', 'uploadedAt', 'createdAt', 'countdownTarget', 'anniversaryStart']);
 const JSZIP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
 
@@ -77,7 +80,16 @@ export function stamp() {
     return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
 }
 
-export async function exportBackup({ photos, onProgress = () => {} }) {
+function audioExtension(path) {
+    return String(path).split('.').pop().toLowerCase();
+}
+
+async function fetchAudio(path) {
+    const res = await callWorker('GET', path);
+    return res.blob();
+}
+
+export async function exportBackup({ photos, audio, onProgress = () => {} }) {
     const JSZip = await loadJSZip();
 
     onProgress('Reading your data…', 0);
@@ -92,17 +104,32 @@ export async function exportBackup({ photos, onProgress = () => {} }) {
     const root = { version: VERSION, exportedAt: Date.now() };
     const counts = {};
     let skipped = 0;
+    let skippedAudio = 0;
 
     const withPhotos = photos ? all.gallery.filter(d => d.data.imageUrl) : [];
+    const withAudio  = audio ? all.voice.filter(d => d.data.audioPath) : [];
+    const mediaTotal = withPhotos.length + withAudio.length;
     let done = 0;
+    let audioDone = 0;
 
     for (const name of [...COLLECTIONS, 'settings']) {
         counts[name] = all[name].length;
         root[name] = [];
         for (const { id, data } of all[name]) {
             const entry = { ...encode(data), _id: id };
+            if (name === 'voice' && audio && data.audioPath) {
+                onProgress(`Downloading recording ${++audioDone} of ${withAudio.length}…`, (withPhotos.length + audioDone) / (mediaTotal + 1));
+                const file = `${id}.${audioExtension(data.audioPath)}`;
+                try {
+                    zip.file(AUDIO_DIR + file, await fetchAudio(data.audioPath), { compression: 'STORE' });
+                    entry._zipAudio = file;
+                } catch (err) {
+                    console.warn('Recording not included', id, err);
+                    skippedAudio++;
+                }
+            }
             if (name === 'gallery' && photos && data.imageUrl) {
-                onProgress(`Downloading photo ${++done} of ${withPhotos.length}…`, done / (withPhotos.length + 1));
+                onProgress(`Downloading photo ${++done} of ${withPhotos.length}…`, done / (mediaTotal + 1));
                 try {
                     zip.file(`${IMAGES_DIR}${id}.jpg`, await fetchBlob(data.imageUrl), { compression: 'STORE' });
                     entry._zipFull = `${id}.jpg`;
@@ -128,7 +155,7 @@ export async function exportBackup({ photos, onProgress = () => {} }) {
         onProgress('Building the file…', 0.9 + meta.percent / 1000);
     });
 
-    return { blob, filename: `faithfully-backup-${stamp()}.zip`, counts, skipped };
+    return { blob, filename: `faithfully-backup-${stamp()}.zip`, counts, skipped, skippedAudio };
 }
 
 export async function readBackup(file) {
@@ -172,11 +199,12 @@ export async function readBackup(file) {
     if (!Object.keys(data).length) throw userError('That backup contains none of the expected data.');
 
     const photoCount = (data.gallery || []).filter(d => d._zipFull && zip.file(IMAGES_DIR + d._zipFull)).length;
-    return { zip, data, counts, photoCount, exportedAt: root.exportedAt };
+    const audioCount = (data.voice || []).filter(d => d._zipAudio && zip.file(AUDIO_DIR + d._zipAudio)).length;
+    return { zip, data, counts, photoCount, audioCount, exportedAt: root.exportedAt };
 }
 
 function strip(entry) {
-    const { _id, _zipFull, _zipThumb, ...rest } = entry;
+    const { _id, _zipFull, _zipThumb, _zipAudio, ...rest } = entry;
     return decode(rest);
 }
 
@@ -196,11 +224,15 @@ export async function restoreBackup(backup, { mode, onProgress = () => {} }) {
     const current = await fetchAll();
 
     const photoJobs = (data.gallery || []).filter(d => d._zipFull && zip.file(IMAGES_DIR + d._zipFull)).length;
-    const total = photoJobs + 1;
+    const audioJobs = (data.voice || []).filter(d => d._zipAudio && zip.file(AUDIO_DIR + d._zipAudio)).length;
+    const total = photoJobs + audioJobs + 1;
     let step = 0;
+    let audioStep = 0;
 
     const finalGallery = new Map(current.gallery.map(d => [d.id, d.data]));
+    const staleAudio = [];
     let failedPhotos = 0;
+    let failedAudio = 0;
 
     for (const name of COLLECTIONS) {
         if (!data[name]) continue;
@@ -209,6 +241,18 @@ export async function restoreBackup(backup, { mode, onProgress = () => {} }) {
         for (const entry of data[name]) {
             const fields = strip(entry);
             const col = db.collection(name);
+
+            if (name === 'voice' && entry._zipAudio && fields.audioPath && zip.file(AUDIO_DIR + entry._zipAudio)) {
+                onProgress(`Uploading recording ${++audioStep} of ${audioJobs}…`, (photoJobs + audioStep) / total);
+                try {
+                    const file = await zip.file(AUDIO_DIR + entry._zipAudio).async('blob');
+                    await callWorker('PUT', fields.audioPath, file, fields.mimeType || AUDIO_TYPES[audioExtension(fields.audioPath)] || 'audio/webm');
+                } catch (err) {
+                    console.warn('Recording not restored', entry._id, err);
+                    failedAudio++;
+                    continue;
+                }
+            }
 
             if (name === 'gallery' && entry._zipFull && zip.file(IMAGES_DIR + entry._zipFull)) {
                 onProgress(`Uploading photo ${++step} of ${photoJobs}…`, step / total);
@@ -239,6 +283,7 @@ export async function restoreBackup(backup, { mode, onProgress = () => {} }) {
             const stale = current[name].filter(d => !keep.has(d.id));
             await commitChunks(stale.map(d => batch => batch.delete(db.collection(name).doc(d.id))));
             if (name === 'gallery') stale.forEach(d => finalGallery.delete(d.id));
+            if (name === 'voice') stale.forEach(d => { if (d.data.audioPath) staleAudio.push(d.data.audioPath); });
         }
     }
 
@@ -268,5 +313,15 @@ export async function restoreBackup(backup, { mode, onProgress = () => {} }) {
         }
     }
 
-    return { failedPhotos, leftover };
+    let leftoverAudio = 0;
+    for (const path of staleAudio) {
+        try {
+            await callWorker('DELETE', path);
+        } catch (err) {
+            console.warn('Old recording not removed', path, err);
+            leftoverAudio++;
+        }
+    }
+
+    return { failedPhotos, leftover, failedAudio, leftoverAudio };
 }

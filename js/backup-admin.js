@@ -2,7 +2,11 @@ import { isAdmin, onAuthChange } from './auth.js';
 import { showDialog } from './admin.js';
 import { exportBackup, readBackup, restoreBackup } from './backup.js';
 
-const LABELS = { chapters: 'chapters', cards: 'letters', gallery: 'photos', apps: 'apps', settings: 'home settings' };
+const LABELS = { chapters: 'chapters', cards: 'letters', gallery: 'photos', apps: 'apps', voice: 'recordings', settings: 'home settings' };
+
+function plural(n, word) {
+    return `${n} ${word}${n > 1 ? 's' : ''}`;
+}
 
 function download(blob, filename) {
     const url = URL.createObjectURL(blob);
@@ -36,8 +40,9 @@ function openBackupDialog() {
 
                 <section class="backup-section">
                     <h3 class="backup-heading">Back up</h3>
-                    <p class="backup-text">Saves chapters, letters, photo entries, apps and the home settings to a zip file.</p>
+                    <p class="backup-text">Saves chapters, letters, photo entries, apps, recording entries and the home settings to a zip file.</p>
                     <label class="backup-check"><input type="checkbox" data-photos> Include the photo files (slower, larger file)</label>
+                    <label class="backup-check"><input type="checkbox" data-audio checked> Include the voice recordings</label>
                     <button type="button" class="admin-btn admin-btn-primary" data-export>Download backup</button>
                 </section>
 
@@ -51,7 +56,7 @@ function openBackupDialog() {
                     <div class="backup-restore" hidden>
                         <p class="backup-text" data-contents></p>
                         <label class="backup-check"><input type="radio" name="backupMode" value="merge" checked> Merge: add and overwrite entries from the backup, keep everything else</label>
-                        <label class="backup-check"><input type="radio" name="backupMode" value="replace"> Replace: make the site match the backup exactly (a data-only backup of the current site downloads first)</label>
+                        <label class="backup-check"><input type="radio" name="backupMode" value="replace"> Replace: make the site match the backup exactly (a backup of the current site, without photo files, downloads first)</label>
                         <label class="backup-check backup-confirm" hidden><input type="checkbox" data-confirm> I understand entries not in the backup will be deleted</label>
                         <button type="button" class="admin-btn admin-btn-primary" data-restore>Restore</button>
                     </div>
@@ -69,6 +74,7 @@ function openBackupDialog() {
 
     const $ = selector => el.querySelector(selector);
     const photosBox    = $('[data-photos]');
+    const audioBox     = $('[data-audio]');
     const exportBtn    = $('[data-export]');
     const fileInput    = $('[data-file]');
     const fileName     = $('[data-file-name]');
@@ -118,10 +124,12 @@ function openBackupDialog() {
     }
 
     exportBtn.addEventListener('click', () => run(async () => {
-        const { blob, filename, counts, skipped } = await exportBackup({ photos: photosBox.checked, onProgress: report });
+        const { blob, filename, counts, skipped, skippedAudio } = await exportBackup({ photos: photosBox.checked, audio: audioBox.checked, onProgress: report });
         download(blob, filename);
-        const note = skipped ? ` ${skipped} photo file${skipped > 1 ? 's' : ''} could not be downloaded and ${skipped > 1 ? 'are' : 'is'} not included.` : '';
-        report(`Saved ${describeCounts(counts)}.${note}`);
+        const notes = [];
+        if (skipped) notes.push(`${plural(skipped, 'photo file')} could not be downloaded and ${skipped > 1 ? 'are' : 'is'} not included.`);
+        if (skippedAudio) notes.push(`${plural(skippedAudio, 'recording')} could not be downloaded and ${skippedAudio > 1 ? 'are' : 'is'} not included.`);
+        report(`Saved ${describeCounts(counts)}. ${notes.join(' ')}`.trim());
     }));
 
     fileInput.addEventListener('change', () => {
@@ -134,8 +142,9 @@ function openBackupDialog() {
 
         run(async () => {
             backup = await readBackup(file);
-            const photos = backup.photoCount ? ` Includes ${backup.photoCount} photo file${backup.photoCount > 1 ? 's' : ''}.` : '';
-            contents.textContent = `This backup holds ${describeCounts(backup.counts)}.${photos}`;
+            const photos = backup.photoCount ? ` Includes ${plural(backup.photoCount, 'photo file')}.` : '';
+            const audio  = backup.audioCount ? ` Includes ${plural(backup.audioCount, 'recording file')}.` : '';
+            contents.textContent = `This backup holds ${describeCounts(backup.counts)}.${photos}${audio}`;
             restorePanel.hidden = false;
         });
     });
@@ -145,14 +154,16 @@ function openBackupDialog() {
     restoreBtn.addEventListener('click', () => run(async () => {
         const replace = mode() === 'replace';
         if (replace) {
-            const safety = await exportBackup({ photos: false, onProgress: report });
+            const safety = await exportBackup({ photos: false, audio: true, onProgress: report });
             download(safety.blob, safety.filename.replace('backup', 'before-restore'));
         }
-        const { failedPhotos, leftover } = await restoreBackup(backup, { mode: mode(), onProgress: report });
+        const { failedPhotos, leftover, failedAudio, leftoverAudio } = await restoreBackup(backup, { mode: mode(), onProgress: report });
 
         const notes = [];
-        if (failedPhotos) notes.push(`${failedPhotos} photo${failedPhotos > 1 ? 's' : ''} could not be uploaded.`);
-        if (leftover) notes.push(`${leftover} old photo file${leftover > 1 ? 's' : ''} could not be removed.`);
+        if (failedPhotos) notes.push(`${plural(failedPhotos, 'photo')} could not be uploaded.`);
+        if (leftover) notes.push(`${plural(leftover, 'old photo file')} could not be removed.`);
+        if (failedAudio) notes.push(`${plural(failedAudio, 'recording')} could not be uploaded.`);
+        if (leftoverAudio) notes.push(`${plural(leftoverAudio, 'old recording file')} could not be removed.`);
         report(`Restore complete 🌻 ${notes.join(' ')}`.trim());
 
         backup = null;
